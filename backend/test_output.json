@@ -1,0 +1,405 @@
+{
+  "metadata": {
+    "book_name": "Company Law",
+    "chapter_name": "1.1 What do the concepts of ‘company’, ‘body corporate’, ‘corporation’ and ‘person’ contemplate in relation to companies registered under the Companies Act?",
+    "section_title": "Introduction",
+    "total_topics": 5,
+    "model_used": "deepseek-chat",
+    "pdf_pages": 15,
+    "generated_at": "2026-08-13T10:22:05.919028+00:00"
+  },
+  "modules": [
+    {
+      "module_id": "MODULE_1",
+      "module_title": "Concepts and Definitions",
+      "topics": [
+        {
+          "topic_id": "1.1.1",
+          "topic_title": "Meaning of 'company' and 'body corporate' under the Companies Act",
+          "sub_title": "Definitions under Section 2(20) and 2(11) of the Companies Act, 2013",
+          "concept": "The term 'company' is defined under Section 2(20) of the Companies Act, 2013 as a company formed and registered under this Act or an existing company. 'Body corporate' is defined under Section 2(11) of the Act and includes a company incorporated outside India, but excludes corporations sole, co-operative societies, and any other body corporate specified by the Central Government. Every company is a body corporate, but not every body corporate is a company.",
+          "prerequisites": [
+            "Basic understanding of legal entities",
+            "Familiarity with the Companies Act structure"
+          ],
+          "explanation": "The Companies Act, 2013 (replacing the 1956 Act) defines 'company' in Section 2(20) as a company formed and registered under this Act or an existing company. 'Body corporate' is defined in Section 2(11) to include a company incorporated outside India, but excludes a corporation sole, a co-operative society, and any other body corporate specified by the Central Government. The term 'body corporate' is broader than 'company' and includes various entities like public financial institutions and nationalised banks. The definition is crucial for determining the applicability of the Act to various entities.",
+          "examples": [
+            {
+              "title": "Company vs. Body Corporate",
+              "content": "A private limited company registered under the Companies Act is both a company and a body corporate. However, a foreign company incorporated outside India is a body corporate but not a 'company' under the Act unless it is registered as a foreign company."
+            },
+            {
+              "title": "Excluded Entities",
+              "content": "A co-operative society registered under the Co-operative Societies Act is not a body corporate under the Companies Act, as it is specifically excluded. Similarly, a corporation sole (e.g., certain religious offices) is excluded."
+            }
+          ],
+          "practice_problems": [
+            {
+              "type": "MCQ",
+              "question": "Which of the following is NOT a body corporate under Section 2(11) of the Companies Act, 2013?",
+              "options": [
+                "a) A company incorporated outside India",
+                "b) A co-operative society",
+                "c) A public financial institution",
+                "d) A nationalised bank"
+              ],
+              "answer": "b)",
+              "explanation": "A co-operative society is specifically excluded from the definition of 'body corporate' under Section 2(11). Other options are included."
+            },
+            {
+              "type": "Problem",
+              "question": "XYZ Ltd. is a company incorporated in the United Kingdom. It has a branch office in India. Is XYZ Ltd. a 'company' under the Companies Act, 2013? Is it a 'body corporate'? Explain.",
+              "options": [],
+              "answer": "XYZ Ltd. is not a 'company' under Section 2(20) because it is not formed and registered under the Act. However, it is a 'body corporate' under Section 2(11) as it is a company incorporated outside India.",
+              "explanation": "The definition of 'company' is limited to companies registered under the Act, while 'body corporate' includes foreign companies."
+            }
+          ],
+          "misconceptions": [
+            {
+              "misconception": "All bodies corporate are companies.",
+              "correction": "Not true. Every company is a body corporate, but bodies corporate include other entities like foreign companies, public financial institutions, etc., which are not companies under the Act."
+            },
+            {
+              "misconception": "The term 'corporation' is used only in the Companies Act.",
+              "correction": "Apart from the Companies Act, 'corporation' is used for bodies created under special statutes by Parliament or State Legislatures."
+            }
+          ],
+          "assessment": {
+            "self_check_questions": [
+              "What is the definition of 'company' under Section 2(20)?",
+              "What are the exclusions under Section 2(11)?",
+              "Why is 'body corporate' a wider term than 'company'?"
+            ],
+            "difficulty": "Beginner",
+            "exam_weightage": "High"
+          },
+          "short_notes": [
+            "Company is defined in Section 2(20) of Companies Act, 2013.",
+            "Body corporate is defined in Section 2(11) of Companies Act, 2013.",
+            "Every company is a body corporate, but not vice versa.",
+            "Exclusions from body corporate include corporation sole, co-operative societies, and notified bodies."
+          ],
+          "long_notes": "The Companies Act, 2013, under Section 2(20), defines 'company' as a company formed and registered under this Act or an existing company. 'Existing company' means a company formed and registered under any previous company law. Section 2(11) defines 'body corporate' or 'corporation' to include a company incorporated outside India, but excludes (a) a corporation sole, (b) a co-operative society registered under any law relating to co-operative societies, and (c) any other body corporate (not being a company as defined in the Act) which the Central Government may specify by notification. The term 'body corporate' is broader and includes entities like public financial institutions (Section 2(72)) and nationalised banks. The distinction is important for legal interpretation and application of the Act. The definition of 'body corporate' is also used in other statutes, but under the Act, it is specifically defined. The MCA Circular No. 8/(26)/2(7)/63-PR dated 13-3-1963 clarifies that any corporate body with perpetual succession, common seal, and legal entity apart from members is a body corporate, but societies under the Societies Registration Act are not included.",
+          "rag_keywords": [
+            "company definition",
+            "body corporate definition",
+            "Section 2(20)",
+            "Section 2(11)",
+            "corporation sole"
+          ],
+          "rag_summary": "Under the Companies Act, 2013, 'company' is defined in Section 2(20) as a company formed and registered under the Act, while 'body corporate' is defined in Section 2(11) to include foreign companies but exclude corporations sole, co-operative societies, and notified bodies. Every company is a body corporate, but not all bodies corporate are companies."
+        },
+        {
+          "topic_id": "1.1.2",
+          "topic_title": "Attributes of corporate personality",
+          "sub_title": "Key features of a body corporate",
+          "concept": "Corporate personality refers to the legal recognition of a company as an artificial person distinct from its members. Key attributes include perpetual succession, common seal, limited liability, separate legal entity, and the capacity to sue and be sued.",
+          "prerequisites": [
+            "Understanding of legal personality",
+            "Basic knowledge of company law"
+          ],
+          "explanation": "A company, upon incorporation, becomes a body corporate with corporate personality. This means it is a legal entity separate from its members. The attributes include: (1) Perpetual succession - the company continues to exist despite changes in membership; (2) Common seal - historically used as the company's signature; (3) Limited liability - members' liability is limited to their shareholding; (4) Capacity to own property, enter contracts, sue and be sued in its own name. These attributes are derived from Section 9 of the Companies Act, 2013 (corresponding to Section 34(2) of the 1956 Act). The concept was explained in Fulham Football Club (1987) Ltd v Richards [2012] Bus LR 606, where the court described a company as a fictional entity with legal rights and liabilities.",
+          "examples": [
+            {
+              "title": "Perpetual Succession",
+              "content": "A company's existence is not affected by the death or insolvency of its shareholders. For instance, if a shareholder dies, the company continues to exist."
+            },
+            {
+              "title": "Separate Legal Entity",
+              "content": "In Salomon v Salomon & Co. Ltd. (1897), the House of Lords held that a company is a separate legal entity from its members, and the company's debts are not the members' debts."
+            }
+          ],
+          "practice_problems": [
+            {
+              "type": "MCQ",
+              "question": "Which of the following is NOT an attribute of corporate personality?",
+              "options": [
+                "a) Perpetual succession",
+                "b) Common seal",
+                "c) Unlimited liability of members",
+                "d) Capacity to sue and be sued"
+              ],
+              "answer": "c)",
+              "explanation": "Corporate personality typically includes limited liability, not unlimited liability. Unlimited liability is an exception, not a general attribute."
+            },
+            {
+              "type": "Problem",
+              "question": "A company has only one shareholder, who dies. What happens to the company? Explain with reference to corporate personality.",
+              "options": [],
+              "answer": "The company continues to exist due to perpetual succession. The shares pass to the legal heirs, but the company's existence is unaffected.",
+              "explanation": "Perpetual succession ensures that the company's existence is independent of its members."
+            }
+          ],
+          "misconceptions": [
+            {
+              "misconception": "A company is a natural person.",
+              "correction": "A company is an artificial person created by law, not a natural person. It has legal personality but cannot act on its own; it acts through human agents."
+            },
+            {
+              "misconception": "Members are liable for the company's debts.",
+              "correction": "In a limited company, members' liability is limited to the amount unpaid on their shares. The company is liable for its own debts."
+            }
+          ],
+          "assessment": {
+            "self_check_questions": [
+              "What is perpetual succession?",
+              "What is the significance of a common seal?",
+              "How does a company act as a separate legal entity?"
+            ],
+            "difficulty": "Intermediate",
+            "exam_weightage": "High"
+          },
+          "short_notes": [
+            "Corporate personality makes a company a separate legal entity.",
+            "Perpetual succession means the company continues despite member changes.",
+            "Common seal is an attribute, though not mandatory under the 2013 Act.",
+            "Limited liability is a key attribute for members."
+          ],
+          "long_notes": "Corporate personality is a fundamental concept in company law. Upon incorporation, a company becomes a body corporate with the capacity to exercise all functions of an incorporated company, as per Section 9 of the Companies Act, 2013. The attributes include: (1) Separate legal entity - the company is distinct from its members, as established in Salomon v Salomon & Co. Ltd. (1897) AC 22; (2) Perpetual succession - the company's existence is not affected by changes in membership; (3) Common seal - historically used for executing documents, though the 2013 Act makes it optional; (4) Limited liability - members' liability is limited to their shareholding; (5) Capacity to own property, enter contracts, sue and be sued. The concept was elaborated in Fulham Football Club (1987) Ltd v Richards [2012] Bus LR 606, where the court described a company as a fictional entity with legal rights and liabilities. The attributes are essential for the company to function as a legal person in the business world.",
+          "rag_keywords": [
+            "corporate personality",
+            "perpetual succession",
+            "common seal",
+            "separate legal entity",
+            "limited liability"
+          ],
+          "rag_summary": "Corporate personality is the legal principle that a company is an artificial person distinct from its members, with attributes like perpetual succession, common seal, limited liability, and the capacity to sue and be sued. This concept is fundamental to company law and was established in Salomon v Salomon."
+        },
+        {
+          "topic_id": "1.1.3",
+          "topic_title": "Difference between incorporation of a company and constitution or establishment of a corporation",
+          "sub_title": "Distinction between registration under Companies Act and creation under special statutes",
+          "concept": "Incorporation of a company refers to the process of forming and registering a company under the Companies Act, resulting in a body corporate. Constitution or establishment of a corporation refers to the creation of a body corporate under a special statute enacted by Parliament or State Legislature, such as a statutory corporation. Both result in a body corporate, but the legal framework and purpose differ.",
+          "prerequisites": [
+            "Understanding of company incorporation",
+            "Knowledge of statutory corporations"
+          ],
+          "explanation": "A company is incorporated under the Companies Act, 2013, by following the registration process. It is governed by the Act and its memorandum and articles of association. A corporation, in the broader sense, can be established under a special statute, such as the Life Insurance Corporation Act, 1956, or the State Bank of India Act, 1955. Such corporations are created by a specific act of the legislature and are often referred to as statutory corporations. The key difference lies in the source of creation: companies are formed by registration under a general law, while statutory corporations are created by a special law. Both have corporate personality, but the latter may have specific powers and functions defined by the statute.",
+          "examples": [
+            {
+              "title": "Incorporation of a Company",
+              "content": "ABC Pvt. Ltd. is incorporated under the Companies Act, 2013, by filing the memorandum and articles of association with the Registrar of Companies."
+            },
+            {
+              "title": "Establishment of a Statutory Corporation",
+              "content": "The Life Insurance Corporation of India was established under the Life Insurance Corporation Act, 1956, a special statute, and is a body corporate."
+            }
+          ],
+          "practice_problems": [
+            {
+              "type": "MCQ",
+              "question": "Which of the following is a statutory corporation?",
+              "options": [
+                "a) A private limited company",
+                "b) A public limited company",
+                "c) Life Insurance Corporation of India",
+                "d) A foreign company"
+              ],
+              "answer": "c)",
+              "explanation": "LIC is established under a special statute, making it a statutory corporation. Others are companies under the Companies Act."
+            },
+            {
+              "type": "Problem",
+              "question": "Explain the difference between a company incorporated under the Companies Act and a corporation established under a special statute, with examples.",
+              "options": [],
+              "answer": "A company is formed by registration under the Companies Act, e.g., Reliance Industries Ltd. A statutory corporation is created by a special act, e.g., State Bank of India. The former is governed by the Companies Act, while the latter is governed by its specific statute.",
+              "explanation": "The distinction is based on the legal source of creation and the governing law."
+            }
+          ],
+          "misconceptions": [
+            {
+              "misconception": "All corporations are companies.",
+              "correction": "Not true. Statutory corporations like LIC are not companies under the Companies Act, but they are bodies corporate."
+            },
+            {
+              "misconception": "Incorporation and establishment are the same.",
+              "correction": "Incorporation is specific to registration under the Companies Act, while establishment can be under any special statute."
+            }
+          ],
+          "assessment": {
+            "self_check_questions": [
+              "What is the process of incorporation?",
+              "What is a statutory corporation?",
+              "How do the legal frameworks differ?"
+            ],
+            "difficulty": "Intermediate",
+            "exam_weightage": "Medium"
+          },
+          "short_notes": [
+            "Incorporation is under the Companies Act.",
+            "Statutory corporations are created by special statutes.",
+            "Both have corporate personality.",
+            "Companies are governed by the Companies Act; statutory corporations by their specific acts."
+          ],
+          "long_notes": "The Companies Act, 2013 provides for the incorporation of companies, which become bodies corporate upon registration. The process involves filing the memorandum and articles of association, and the Registrar issues a certificate of incorporation. On the other hand, a corporation can be constituted or established under a special statute, such as the Reserve Bank of India Act, 1934, or the Food Corporation of India Act, 1964. These statutory corporations are created to fulfill specific public purposes and are governed by their respective statutes, not by the Companies Act. The key difference is the legal basis: companies are formed under a general law, while statutory corporations are formed under special laws. Both are bodies corporate with perpetual succession and separate legal personality, but their powers, functions, and governance structures may differ. For example, a statutory corporation may have government ownership and control, while a company may be privately owned. The distinction is important for legal interpretation and regulatory compliance.",
+          "rag_keywords": [
+            "incorporation",
+            "statutory corporation",
+            "special statute",
+            "Companies Act",
+            "body corporate"
+          ],
+          "rag_summary": "Incorporation of a company is the process of registration under the Companies Act, resulting in a body corporate. In contrast, a corporation can be established under a special statute, such as LIC or SBI, creating a statutory corporation. Both have corporate personality but differ in their legal basis and governance."
+        }
+      ]
+    },
+    {
+      "module_id": "MODULE_2",
+      "module_title": "Legal Personality and Citizenship",
+      "topics": [
+        {
+          "topic_id": "1.1.4",
+          "topic_title": "Whether Company is a 'Person'",
+          "sub_title": "Juristic Personality of a Company",
+          "concept": "A company registered under the Companies Act is a juristic person, an artificial entity recognized by law as having legal personality, distinct from its members. It can enjoy rights and be subject to duties, sue and be sued, hold property, and enter contracts.",
+          "prerequisites": [
+            "Understanding of 'body corporate' and 'corporation'",
+            "Concept of incorporation under the Companies Act"
+          ],
+          "explanation": "Under the Companies Act, a company is a juristic person, an artificial entity created by law. It is not a natural person but is recognized as a legal person with rights and obligations. This is established by Section 34(2) of the Companies Act, 2013 (previously Section 34(2) of the 1956 Act), which states that upon incorporation, the company becomes a body corporate with perpetual succession and a common seal. The concept is reinforced by judicial decisions such as Shiromani Gurudwara Prabandhak Committee v Shri Som Nath Dass (2000), which explains that a juristic person is an entity recognized by law as a person, acting through designated individuals. The company's personality is distinct from its members, allowing it to own property, enter contracts, and sue or be sued in its own name.",
+          "examples": [
+            {
+              "title": "Company Suing in Its Own Name",
+              "content": "ABC Pvt Ltd, a company incorporated under the Companies Act, enters into a contract with XYZ Ltd. When XYZ breaches the contract, ABC Pvt Ltd sues XYZ in its own name, not in the name of its shareholders. This illustrates the company's separate legal personality."
+            },
+            {
+              "title": "Company Holding Property",
+              "content": "A company owns a factory building. The building is registered in the company's name, not in the names of its shareholders. If a shareholder dies, the property remains with the company, demonstrating perpetual succession and separate entity."
+            }
+          ],
+          "practice_problems": [
+            {
+              "type": "MCQ",
+              "question": "Which of the following best describes a company registered under the Companies Act?",
+              "options": [
+                "a) A natural person",
+                "b) A juristic person",
+                "c) A body of individuals without legal personality",
+                "d) A partnership firm"
+              ],
+              "answer": "b)",
+              "explanation": "A company is a juristic person, an artificial entity recognized by law as having legal personality, distinct from its members. It is not a natural person (a) nor a mere body without legal personality (c). It is not a partnership (d) as it has separate legal existence."
+            },
+            {
+              "type": "Problem",
+              "question": "A company, XYZ Ltd, is incorporated under the Companies Act. One of its shareholders, Mr. A, dies. Does the company cease to exist? Explain with reference to the concept of juristic personality.",
+              "options": [],
+              "answer": "No, the company continues to exist. As a juristic person, the company has perpetual succession, meaning its existence is not affected by the death of its members. The company's legal personality is distinct from its members, so the death of a shareholder does not dissolve the company.",
+              "explanation": "The concept of juristic personality ensures that the company is a separate legal entity. Perpetual succession is a key attribute, as stated in Section 34(2) of the Companies Act, 2013, which provides that the company has perpetual succession. Thus, the death of a member does not affect the company's existence."
+            }
+          ],
+          "misconceptions": [
+            {
+              "misconception": "A company is a natural person because it can act like one.",
+              "correction": "A company is an artificial or juristic person, not a natural person. It is created by law and acts through human agents. It has rights and duties but lacks physical existence."
+            },
+            {
+              "misconception": "The company's personality is the same as its members' personalities.",
+              "correction": "The company has a distinct legal personality separate from its members. This is the essence of corporate personality, as established in Section 34(2) and recognized in case law."
+            }
+          ],
+          "assessment": {
+            "self_check_questions": [
+              "What is a juristic person?",
+              "How does a company acquire legal personality?",
+              "Why is a company considered a person under the law?"
+            ],
+            "difficulty": "Intermediate",
+            "exam_weightage": "High"
+          },
+          "short_notes": [
+            "A company is a juristic person, an artificial entity recognized by law.",
+            "It has rights and duties, can sue and be sued, and hold property.",
+            "Its personality is distinct from its members.",
+            "Section 34(2) of the Companies Act, 2013, confers corporate personality."
+          ],
+          "long_notes": "A company registered under the Companies Act is a juristic person, an artificial entity created by law. This is a fundamental principle of corporate law. The concept is derived from the definition of 'body corporate' under Section 2(11) of the Companies Act, 2013, and the effect of incorporation under Section 9 (previously Section 34(2) of the 1956 Act). The company is capable of enjoying rights and being subject to duties, just like a natural person, but it acts through its directors and officers. The leading case of Shiromani Gurudwara Prabandhak Committee v Shri Som Nath Dass (2000) AIR SCW 1394: AIR 2000 SC 1421 explains that a juristic person is an entity recognized by law as a person, not a natural person but an artificial creation. The company's separate personality is also highlighted in Halsbury's Laws of England, which defines a corporation as having a personality distinct from its members. This legal personality allows the company to own property, enter contracts, and sue or be sued in its own name. The concept is essential for understanding corporate liability and limited liability of members.",
+          "rag_keywords": [
+            "juristic person",
+            "artificial person",
+            "legal personality",
+            "company as person",
+            "corporate personality"
+          ],
+          "rag_summary": "A company is a juristic person, an artificial entity recognized by law with legal personality distinct from its members. It can enjoy rights, incur liabilities, and act through human agents, as established by the Companies Act and judicial interpretation."
+        },
+        {
+          "topic_id": "1.1.5",
+          "topic_title": "Whether a Company is a Citizen",
+          "sub_title": "Citizenship Status of a Company",
+          "concept": "A company, being an artificial person, is not a citizen under the Constitution of India or the Citizenship Act. Citizenship is a status conferred only on natural persons. However, companies may have nationality and residence for certain legal purposes.",
+          "prerequisites": [
+            "Understanding of juristic personality",
+            "Basic knowledge of citizenship laws"
+          ],
+          "explanation": "The question of whether a company is a citizen arises in the context of fundamental rights and legal status. The Constitution of India, under Articles 5 to 11, defines citizenship, which applies only to natural persons. A company, being an artificial person, cannot be a citizen. This was affirmed in the case of Shiromani Gurudwara Prabandhak Committee v Shri Som Nath Dass (2000), which distinguished between natural and juristic persons. However, companies are considered 'persons' for many legal purposes, and they may have a nationality (based on the country of incorporation) and residence (based on where its central management and control is situated). This distinction is important for tax laws, foreign investment regulations, and jurisdiction issues.",
+          "examples": [
+            {
+              "title": "Company Not a Citizen for Fundamental Rights",
+              "content": "A company cannot claim the right to vote or other political rights that are exclusive to citizens. For instance, a company cannot vote in elections, as voting is a right of natural persons who are citizens."
+            },
+            {
+              "title": "Company's Nationality for Tax Purposes",
+              "content": "A company incorporated in India is considered an Indian company for tax purposes, but this does not make it a citizen. It is a resident of India for tax purposes, but citizenship is not applicable."
+            }
+          ],
+          "practice_problems": [
+            {
+              "type": "MCQ",
+              "question": "Which of the following statements is correct regarding a company's citizenship?",
+              "options": [
+                "a) A company is a citizen of India under the Constitution.",
+                "b) A company is a juristic person and can be a citizen.",
+                "c) A company is not a citizen but may have nationality and residence.",
+                "d) A company is a citizen for the purpose of fundamental rights."
+              ],
+              "answer": "c)",
+              "explanation": "A company is not a citizen under the Constitution, as citizenship is only for natural persons. However, companies have nationality and residence for legal purposes, such as taxation and jurisdiction."
+            },
+            {
+              "type": "Problem",
+              "question": "XYZ Ltd, a company incorporated in India, claims the right to freedom of speech under Article 19 of the Constitution. Can it do so? Discuss with reference to the concept of citizenship.",
+              "options": [],
+              "answer": "No, a company cannot claim the right to freedom of speech under Article 19, as that right is available only to citizens. However, a company may claim other fundamental rights available to 'persons' under Article 19, such as the right to practice any profession, or carry on any occupation, trade or business, as held in various cases. But citizenship is not applicable.",
+              "explanation": "The Supreme Court has held that companies are not citizens but are 'persons' for the purpose of certain fundamental rights. For example, in the case of Bennett Coleman & Co. v Union of India, it was held that companies can claim freedom of speech and expression as media owners, but this is not based on citizenship. The distinction is crucial."
+            }
+          ],
+          "misconceptions": [
+            {
+              "misconception": "A company is a citizen because it is a person.",
+              "correction": "A company is a juristic person, but citizenship is a status only for natural persons. The Constitution does not confer citizenship on artificial entities."
+            },
+            {
+              "misconception": "A company's nationality is the same as citizenship.",
+              "correction": "Nationality of a company is a concept used in international law and taxation, but it does not confer citizenship rights. Citizenship involves political rights like voting, which companies do not have."
+            }
+          ],
+          "assessment": {
+            "self_check_questions": [
+              "Why is a company not considered a citizen?",
+              "What is the difference between nationality and citizenship for a company?",
+              "Can a company claim fundamental rights under the Constitution?"
+            ],
+            "difficulty": "Intermediate",
+            "exam_weightage": "Medium"
+          },
+          "short_notes": [
+            "A company is not a citizen under the Constitution of India.",
+            "Citizenship is only for natural persons.",
+            "Companies may have nationality and residence for legal purposes.",
+            "Companies can claim certain fundamental rights as 'persons'."
+          ],
+          "long_notes": "The question of whether a company is a citizen is settled: a company is not a citizen. The Constitution of India, under Articles 5-11, defines citizenship, which is limited to natural persons. A company, being an artificial person, cannot be a citizen. This was clarified in the case of Shiromani Gurudwara Prabandhak Committee v Shri Som Nath Dass (2000) AIR SCW 1394: AIR 2000 SC 1421, where the Supreme Court distinguished between natural and juristic persons. However, companies are 'persons' under the law and can claim certain fundamental rights, such as the right to equality (Article 14) and the right to carry on business (Article 19(1)(g)), as held in cases like Bennett Coleman & Co. v Union of India (1973). The concept of nationality of a company is used in international law and taxation, but it does not confer citizenship. For instance, a company incorporated in India is an Indian company for tax purposes, but it is not a citizen. This distinction is important for understanding the legal status of companies in various contexts.",
+          "rag_keywords": [
+            "company citizenship",
+            "citizenship of company",
+            "juristic person and citizenship",
+            "company nationality",
+            "fundamental rights for companies"
+          ],
+          "rag_summary": "A company is not a citizen under the Constitution of India, as citizenship is only for natural persons. However, companies are juristic persons with nationality and residence for legal purposes, and they can claim certain fundamental rights as 'persons'."
+        }
+      ]
+    }
+  ]
+}

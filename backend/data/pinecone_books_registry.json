@@ -1,0 +1,144 @@
+[
+  {
+    "id": "book-06865270",
+    "title": "Class 12 Maths Chapter 5 Continuity and Differentiability",
+    "author": "Academic Faculty",
+    "category": "General",
+    "edition": "2026 Updated Edition",
+    "description": "Comprehensive textbook covering key principles, mathematical definitions, and practical problem-solving for Class 12 Maths Chapter 5 Continuity and Differentiability across 151 pages.",
+    "total_pages": 151,
+    "cover_gradient": "from-blue-600 to-cyan-900",
+    "total_chunks": 291,
+    "stats": {
+      "modules": 2,
+      "chapters": 6,
+      "topics": 2,
+      "totalHours": "10 hrs"
+    },
+    "modules": [
+      {
+        "module_id": "MODULE_1",
+        "module_title": "Introduction to Continuity",
+        "topics": [
+          {
+            "topic_id": "1.1",
+            "topic_title": "Understanding Continuity",
+            "sub_title": "Key overview and definitions",
+            "readTime": "5 min read",
+            "difficulty": "Beginner",
+            "examWeightage": "High",
+            "concept": "Definition and importance of continuity in functions.",
+            "prerequisites": [
+              "Basic algebra"
+            ],
+            "explanation": "Continuity of a function at a point means that the function is defined at that point and the limit as you approach that point equals the function's value.",
+            "examples": [
+              {
+                "title": "Example of a Continuous Function",
+                "content": "The function f(x) = 5x - 3 is continuous at x = 0, x = -3, and x = 5."
+              }
+            ],
+            "flashcards": [
+              {
+                "question": "What is a continuous function?",
+                "answer": "A function is continuous if there are no breaks, jumps, or holes in its graph."
+              }
+            ],
+            "practice_problems": [
+              {
+                "type": "MCQ",
+                "question": "Which of the following functions is continuous?",
+                "options": [
+                  "a) f(x) = 1/(x-5)",
+                  "b) f(x) = x-5"
+                ],
+                "answer": "b)",
+                "explanation": "f(x) = x-5 is continuous everywhere as it is a polynomial function."
+              }
+            ],
+            "misconceptions": [
+              {
+                "misconception": "All polynomial functions are continuous.",
+                "correction": "True, all polynomial functions are continuous everywhere."
+              }
+            ],
+            "assessment": {
+              "self_check_questions": [
+                "What does it mean for a function to be continuous at a point?"
+              ],
+              "difficulty": "Beginner",
+              "exam_weightage": "High"
+            },
+            "short_notes": [
+              "Continuity at a point",
+              "Types of discontinuities"
+            ],
+            "long_notes": "A comprehensive overview of continuity, including definitions, examples, and types of continuity."
+          }
+        ]
+      },
+      {
+        "module_id": "MODULE_2",
+        "module_title": "Differentiability",
+        "topics": [
+          {
+            "topic_id": "2.1",
+            "topic_title": "Understanding Differentiability",
+            "sub_title": "Key overview and definitions",
+            "readTime": "6 min read",
+            "difficulty": "Intermediate",
+            "examWeightage": "Medium",
+            "concept": "Definition and significance of differentiability in calculus.",
+            "prerequisites": [
+              "Understanding of limits"
+            ],
+            "explanation": "A function is differentiable at a point if it has a derivative at that point, which means it is smooth and has no corners or cusps.",
+            "examples": [
+              {
+                "title": "Example of a Differentiable Function",
+                "content": "The function f(x) = 2x - 1 is differentiable everywhere."
+              }
+            ],
+            "flashcards": [
+              {
+                "question": "What does it mean for a function to be differentiable?",
+                "answer": "A function is differentiable at a point if it has a defined derivative at that point."
+              }
+            ],
+            "practice_problems": [
+              {
+                "type": "MCQ",
+                "question": "Which of the following functions is differentiable?",
+                "options": [
+                  "a) f(x) = |x|",
+                  "b) f(x) = x^2"
+                ],
+                "answer": "b)",
+                "explanation": "f(x) = x^2 is differentiable everywhere, while f(x) = |x| is not differentiable at x = 0."
+              }
+            ],
+            "misconceptions": [
+              {
+                "misconception": "All continuous functions are differentiable.",
+                "correction": "Not all continuous functions are differentiable; for example, f(x) = |x| is continuous but not differentiable at x = 0."
+              }
+            ],
+            "assessment": {
+              "self_check_questions": [
+                "What is the relationship between continuity and differentiability?"
+              ],
+              "difficulty": "Intermediate",
+              "exam_weightage": "Medium"
+            },
+            "short_notes": [
+              "Differentiability at a point",
+              "Conditions for differentiability"
+            ],
+            "long_notes": "An in-depth look at differentiability, including definitions, examples, and the relationship between continuity and differentiability."
+          }
+        ]
+      }
+    ],
+    "created_at": "2026-08-14T11:10:04.561482+00:00"
+  }
+]
