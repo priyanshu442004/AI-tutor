@@ -13,7 +13,25 @@ SQL_CONN_STR = os.getenv(
 )
 
 def get_db_connection():
-    return pyodbc.connect(SQL_CONN_STR)
+    """
+    Attempts connection using SQL_CONN_STR.
+    If the specified driver fails (e.g. on Linux), dynamically detects and tries available SQL Server ODBC drivers.
+    """
+    try:
+        return pyodbc.connect(SQL_CONN_STR)
+    except Exception as primary_error:
+        try:
+            available_drivers = pyodbc.drivers()
+            for drv in available_drivers:
+                if "SQL Server" in drv:
+                    alt_conn_str = SQL_CONN_STR.replace("ODBC Driver 18 for SQL Server", drv)
+                    try:
+                        return pyodbc.connect(alt_conn_str)
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+        raise primary_error
 
 def init_db():
     try:
