@@ -9,3 +9,5 @@ reportlab==4.2.5
 pydantic==2.10.3
 httpx==0.28.0
 aiofiles==24.1.0
+pyodbc>=5.0.0
+pinecone-client>=5.0.0
