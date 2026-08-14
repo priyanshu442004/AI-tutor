@@ -89,35 +89,35 @@ export default function StarterSurveyModal({ isOpen, onClose, onComplete, initia
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="relative w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden text-slate-900"
         >
           {/* Header Bar */}
-          <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
                 <Sparkles size={14} />
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">
                 Student Profile Setup ({step + 1} of {QUESTIONS.length})
               </span>
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-800"
+              className="text-slate-400 hover:text-slate-700 transition-colors p-1 rounded-lg hover:bg-slate-100"
             >
               <X size={18} />
             </button>
           </div>
 
           {/* Progress bar */}
-          <div className="h-1 bg-slate-800 w-full overflow-hidden">
+          <div className="h-1 bg-slate-100 w-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-indigo-500 to-violet-500"
+              className="h-full bg-gradient-to-r from-indigo-600 to-violet-600"
               initial={{ width: 0 }}
               animate={{ width: `${progressPct}%` }}
               transition={{ duration: 0.3 }}
@@ -127,10 +127,10 @@ export default function StarterSurveyModal({ isOpen, onClose, onComplete, initia
           {/* Body Content */}
           <div className="p-6 sm:p-8">
             <div className="mb-6">
-              <h2 className="text-xl font-extrabold text-slate-100 mb-1 flex items-center gap-2">
+              <h2 className="text-xl font-extrabold text-slate-900 mb-1 flex items-center gap-2">
                 <span>{currentQ.title}</span>
               </h2>
-              <p className="text-xs text-slate-400">{currentQ.subtitle}</p>
+              <p className="text-xs text-slate-500">{currentQ.subtitle}</p>
             </div>
 
             {/* Options list */}
@@ -144,19 +144,19 @@ export default function StarterSurveyModal({ isOpen, onClose, onComplete, initia
                     className={`
                       w-full flex items-start gap-4 p-4 rounded-xl border text-left transition-all duration-200
                       ${selected
-                        ? 'bg-indigo-600/15 border-indigo-500/60 shadow-lg shadow-indigo-500/10'
-                        : 'bg-slate-800/40 border-slate-800 hover:border-slate-700 hover:bg-slate-800/70'}
+                        ? 'bg-indigo-50 border-indigo-300 shadow-sm'
+                        : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'}
                     `}
                   >
                     <span className="text-2xl flex-shrink-0 mt-0.5">{opt.icon}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className={`text-sm font-bold ${selected ? 'text-indigo-300' : 'text-slate-200'}`}>
+                        <span className={`text-sm font-bold ${selected ? 'text-indigo-900' : 'text-slate-800'}`}>
                           {opt.label}
                         </span>
-                        {selected && <CheckCircle2 size={16} className="text-indigo-400 flex-shrink-0 ml-2" />}
+                        {selected && <CheckCircle2 size={16} className="text-indigo-600 flex-shrink-0 ml-2" />}
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{opt.desc}</p>
+                      <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{opt.desc}</p>
                     </div>
                   </button>
                 )
@@ -164,11 +164,11 @@ export default function StarterSurveyModal({ isOpen, onClose, onComplete, initia
             </div>
 
             {/* Controls */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-800/80">
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 onClick={handlePrev}
                 disabled={step === 0}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ArrowLeft size={14} />
                 Previous
@@ -177,14 +177,14 @@ export default function StarterSurveyModal({ isOpen, onClose, onComplete, initia
               <div className="flex items-center gap-2">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-300 transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors"
                 >
                   Skip for now
                 </button>
 
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-md shadow-indigo-500/20 active:scale-95 transition-all"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 active:scale-95 transition-all"
                 >
                   <span>{step === QUESTIONS.length - 1 ? 'Save & Start Learning' : 'Continue'}</span>
                   <ChevronRight size={14} />
@@ -194,8 +194,8 @@ export default function StarterSurveyModal({ isOpen, onClose, onComplete, initia
           </div>
 
           {/* Footer note */}
-          <div className="bg-slate-950/60 px-6 py-3 border-t border-slate-800/50 flex items-center justify-center gap-2 text-xs text-slate-500">
-            <ShieldCheck size={13} className="text-emerald-500" />
+          <div className="bg-slate-50 px-6 py-3 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-500">
+            <ShieldCheck size={13} className="text-emerald-600" />
             No login required. Your preferences are saved locally on your browser.
           </div>
         </motion.div>

@@ -30,7 +30,6 @@ export default function AskDoubtBot({ selectedBook }) {
     setQuery('')
     setIsThinking(true)
 
-    // Simulate AI vector response based on embedded textbook content
     setTimeout(() => {
       let responseText = ''
       let citations = []
@@ -60,7 +59,7 @@ export default function AskDoubtBot({ selectedBook }) {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* Floating Toggle Button (ChatGPT Icon) */}
+      {/* Floating Toggle Button */}
       {!isOpen && (
         <motion.button
           initial={{ scale: 0.8, opacity: 0 }}
@@ -68,7 +67,7 @@ export default function AskDoubtBot({ selectedBook }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => { setIsOpen(true); setIsMinimized(false); }}
-          className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold shadow-2xl shadow-indigo-500/40 border border-indigo-400/40 hover:from-indigo-500 hover:to-violet-500 transition-all"
+          className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold shadow-xl border border-indigo-300 hover:from-indigo-700 hover:to-violet-700 transition-all"
         >
           <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
             <Sparkles size={16} className="text-amber-300 animate-pulse" />
@@ -77,7 +76,7 @@ export default function AskDoubtBot({ selectedBook }) {
         </motion.button>
       )}
 
-      {/* Floating ChatGPT Window */}
+      {/* Floating Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -86,35 +85,35 @@ export default function AskDoubtBot({ selectedBook }) {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className={`
-              w-96 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col justify-between overflow-hidden
+              w-96 bg-white border border-slate-200 rounded-2xl shadow-2xl flex flex-col justify-between overflow-hidden text-slate-900
               ${isMinimized ? 'h-14' : 'h-[500px]'}
             `}
           >
-            {/* ChatGPT Header Bar */}
-            <div className="p-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            {/* Header Bar */}
+            <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
                   <Bot size={16} />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-100 flex items-center gap-1.5">
+                  <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                     <span>Ask a Doubt AI Bot</span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-medium">AI Tutor</p>
+                  <p className="text-[10px] text-slate-500 font-medium">AI Tutor</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                  className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
                 >
                   <Minus size={14} />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                  className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100"
                 >
                   <X size={14} />
                 </button>
@@ -124,37 +123,37 @@ export default function AskDoubtBot({ selectedBook }) {
             {!isMinimized && (
               <>
                 {/* Notice */}
-                <div className="bg-indigo-500/10 px-3 py-1.5 border-b border-indigo-500/20 text-[10px] text-indigo-300 flex items-center gap-1.5">
-                  <Database size={11} className="text-indigo-400" />
+                <div className="bg-indigo-50 px-3 py-1.5 border-b border-indigo-100 text-[10px] text-indigo-700 flex items-center gap-1.5">
+                  <Database size={11} className="text-indigo-600" />
                   <span>Pinecone Vector DB RAG Search Active</span>
                 </div>
 
                 {/* Messages Body */}
-                <div className="flex-1 p-3.5 overflow-y-auto space-y-3 scrollbar-thin">
+                <div className="flex-1 p-3.5 overflow-y-auto space-y-3 scrollbar-thin bg-slate-50/50">
                   {messages.map((msg, idx) => (
                     <div
                       key={idx}
                       className={`flex gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       {msg.sender === 'ai' && (
-                        <div className="w-6 h-6 rounded-md bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 flex-shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-md bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 flex-shrink-0 mt-0.5 shadow-xs">
                           <Bot size={12} />
                         </div>
                       )}
 
                       <div
                         className={`
-                          max-w-[85%] rounded-xl p-3 text-xs space-y-1.5 leading-relaxed
+                          max-w-[85%] rounded-xl p-3 text-xs space-y-1.5 leading-relaxed shadow-xs
                           ${msg.sender === 'user'
                             ? 'bg-indigo-600 text-white font-medium rounded-tr-none'
-                            : 'bg-slate-800/90 border border-slate-700/60 text-slate-200 rounded-tl-none'}
+                            : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'}
                         `}
                       >
                         <p className="whitespace-pre-wrap font-sans">{msg.text}</p>
                         {msg.citations?.length > 0 && (
                           <div className="pt-1 flex flex-wrap gap-1">
                             {msg.citations.map((c, i) => (
-                              <span key={i} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300">
+                              <span key={i} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                                 {c}
                               </span>
                             ))}
@@ -164,7 +163,7 @@ export default function AskDoubtBot({ selectedBook }) {
                       </div>
 
                       {msg.sender === 'user' && (
-                        <div className="w-6 h-6 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 flex-shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-md bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 flex-shrink-0 mt-0.5 shadow-xs">
                           <User size={12} />
                         </div>
                       )}
@@ -172,15 +171,15 @@ export default function AskDoubtBot({ selectedBook }) {
                   ))}
 
                   {isThinking && (
-                    <div className="flex items-center gap-2 text-[11px] text-indigo-300">
-                      <Sparkles size={13} className="animate-spin text-amber-300" />
+                    <div className="flex items-center gap-2 text-[11px] text-indigo-700">
+                      <Sparkles size={13} className="animate-spin text-amber-500" />
                       <span>Searching Pinecone vector DB...</span>
                     </div>
                   )}
                 </div>
 
                 {/* Input Bar */}
-                <div className="p-3 border-t border-slate-800 bg-slate-950">
+                <div className="p-3 border-t border-slate-200 bg-white">
                   <div className="relative flex items-center">
                     <input
                       type="text"
@@ -188,12 +187,12 @@ export default function AskDoubtBot({ selectedBook }) {
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                       placeholder="Ask any doubt about sections or case laws..."
-                      className="w-full pl-3 pr-10 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full pl-3 pr-10 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
                     />
                     <button
                       onClick={() => handleSend()}
                       disabled={!query.trim() || isThinking}
-                      className="absolute right-1.5 p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-40 transition-colors"
+                      className="absolute right-1.5 p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40 transition-colors shadow-xs"
                     >
                       <Send size={12} />
                     </button>

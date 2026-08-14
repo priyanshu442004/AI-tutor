@@ -38,19 +38,19 @@ export default function UploadZone({ onFile, file, disabled }) {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
-            className="flex items-center gap-4 p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5"
+            className="flex items-center gap-4 p-5 rounded-2xl border border-emerald-300 bg-emerald-50/80 shadow-xs"
           >
-            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center">
-              <CheckCircle2 size={22} className="text-emerald-400" />
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+              <CheckCircle2 size={22} className="text-emerald-600" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-100 truncate">{file.name}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{formatBytes(file.size)} · PDF</p>
+              <p className="text-sm font-semibold text-slate-900 truncate">{file.name}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{formatBytes(file.size)} · PDF Document</p>
             </div>
             {!disabled && (
               <button
                 onClick={(e) => { e.stopPropagation(); onFile(null) }}
-                className="flex-shrink-0 w-8 h-8 rounded-lg hover:bg-slate-700/60 flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors"
+                className="flex-shrink-0 w-8 h-8 rounded-lg hover:bg-emerald-100 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors"
               >
                 <X size={16} />
               </button>
@@ -65,20 +65,19 @@ export default function UploadZone({ onFile, file, disabled }) {
             {...getRootProps()}
             className={`
               relative w-full rounded-2xl border-2 border-dashed p-10 text-center cursor-pointer
-              transition-all duration-300 outline-none
+              transition-all duration-300 outline-none shadow-xs
               ${isDragActive
-                ? 'border-indigo-400 bg-indigo-500/8 shadow-lg shadow-indigo-500/10'
-                : 'border-slate-600/50 bg-slate-800/30 hover:border-indigo-500/60 hover:bg-slate-800/50'
+                ? 'border-indigo-500 bg-indigo-50/70 shadow-md'
+                : 'border-slate-300 bg-slate-50/60 hover:border-indigo-400 hover:bg-slate-50'
               }
               ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
             `}
           >
             <input {...getInputProps()} />
 
-            {/* Animated background blob */}
             {isDragActive && (
               <motion.div
-                className="absolute inset-0 rounded-2xl bg-indigo-500/5 pointer-events-none"
+                className="absolute inset-0 rounded-2xl bg-indigo-50/50 pointer-events-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               />
@@ -91,19 +90,19 @@ export default function UploadZone({ onFile, file, disabled }) {
             >
               <div className={`
                 w-16 h-16 rounded-2xl flex items-center justify-center transition-colors
-                ${isDragActive ? 'bg-indigo-500/20' : 'bg-slate-700/60'}
+                ${isDragActive ? 'bg-indigo-100' : 'bg-slate-200/80'}
               `}>
                 {isDragActive
-                  ? <FileText size={28} className="text-indigo-400" />
-                  : <Upload size={28} className="text-slate-400" />
+                  ? <FileText size={28} className="text-indigo-600" />
+                  : <Upload size={28} className="text-slate-600" />
                 }
               </div>
               <div>
-                <p className="text-base font-semibold text-slate-200 mb-1">
+                <p className="text-base font-semibold text-slate-800 mb-1">
                   {isDragActive ? 'Drop your PDF here' : 'Drag & drop your PDF'}
                 </p>
-                <p className="text-sm text-slate-400">
-                  or <span className="text-indigo-400 font-medium underline underline-offset-2">click to browse</span> — PDF files only
+                <p className="text-sm text-slate-500">
+                  or <span className="text-indigo-600 font-medium underline underline-offset-2">click to browse</span> — PDF files only
                 </p>
               </div>
             </motion.div>

@@ -18,6 +18,7 @@ from pdf_extractor import extract_text_from_pdf, truncate_text_for_api
 from deepseek_client import generate_golden_dataset
 from exporters import dataset_to_pdf, dataset_to_docx
 import rag_service
+from db import save_accepted_golden_dataset, get_accepted_sections, delete_accepted_section, update_accepted_section
 
 # ─── App Initialization ────────────────────────────────────────────────────────
 app = FastAPI(
@@ -55,6 +56,7 @@ async def health():
 
 # ─── Pinecone Vector Book Library Endpoints ────────────────────────────────────
 @app.get("/api/books")
+@app.get("/books")
 async def list_books():
     """
     Returns all active books ingested into Pinecone vector index.
@@ -64,6 +66,7 @@ async def list_books():
 
 
 @app.get("/api/books/{book_id}")
+@app.get("/books/{book_id}")
 async def get_book(book_id: str):
     """
     Returns detailed modules and topics of a specific book.
@@ -76,6 +79,7 @@ async def get_book(book_id: str):
 
 # ─── Admin Book Upload & Vector Embedding Pipeline ──────────────────────────────
 @app.post("/api/admin/books/upload")
+@app.post("/admin/books/upload")
 async def admin_upload_book(
     file: UploadFile = File(...),
     title: str = Form(...),
@@ -95,7 +99,6 @@ async def admin_upload_book(
 
     book_id = f"book-{uuid.uuid4().hex[:8]}"
 
-    # Step 1: Extract text and generate chunks
     try:
         chunks, total_pages, preview_text = rag_service.extract_and_chunk_pdf(
             pdf_bytes=pdf_bytes,
@@ -108,20 +111,17 @@ async def admin_upload_book(
     if not chunks:
         raise HTTPException(422, "PDF contains no extractable text.")
 
-    # Step 2: Embed and Upsert chunks directly to Pinecone vector index
     try:
         total_upserted = rag_service.upsert_chunks_to_pinecone(chunks)
     except Exception as e:
         raise HTTPException(500, f"Pinecone vector embedding upsert failed: {e}")
 
-    # Step 3: Extract chapter modules and topics
     try:
         modules = rag_service.extract_book_modules_from_text(preview_text, title)
     except Exception as e:
         print(f"Module extraction notice: {e}")
         modules = []
 
-    # Step 4: Generate student-friendly description & save book metadata record
     try:
         description = rag_service.generate_book_description_from_text(preview_text, title, total_pages)
     except Exception as e:
@@ -159,6 +159,32 @@ async def admin_upload_book(
 
     rag_service.save_book_to_pinecone(book_record)
 
+    try:
+        sec_name = f"Section: {title}"
+        save_accepted_golden_dataset(
+            section_name=sec_name,
+            dataset_json={
+                "metadata": {"chapter_topic": title, "book_name": title},
+                "sub_topics": [{
+                    "sub_topic_name": title,
+                    "concept": f"Ingested reference textbook '{title}' ({total_pages} pages).",
+                    "prerequisites": ["Corporate Law & Legal Foundations"],
+                    "explanation": description,
+                    "examples": [{"title": f"Reference: {title}", "content": "Statutory and corporate reference manual."}],
+                    "flashcards": [{"question": f"What is covered in {title}?", "answer": description}],
+                    "practice_problems": [{"type": "MCQ", "question": f"Which subject is covered by {title}?", "options": [f"a) {title}", "b) General"], "answer": "a)", "explanation": "Ingested textbook reference."}],
+                    "misconceptions": [{"misconception": "Unverified legal context", "correction": "Grounded in Pinecone vector search"}],
+                    "assessment": {"self_check_questions": [f"What are the main principles of {title}?"], "difficulty": "Intermediate", "exam_weightage": "High"}
+                }],
+                "short_note": [f"Uploaded PDF book '{title}' with {len(chunks)} Pinecone vector chunks."],
+                "long_note": description
+            },
+            book_id="legal",
+            pdf_filename=file.filename
+        )
+    except Exception as e:
+        print(f"Notice: Upload section integration to Legal book: {e}")
+
     return JSONResponse({
         "success": True,
         "message": f"Successfully ingested and embedded '{title}' into Pinecone vector index!",
@@ -173,6 +199,7 @@ async def admin_upload_book(
 
 
 @app.delete("/api/admin/books/{book_id}")
+@app.delete("/admin/books/{book_id}")
 async def admin_delete_book(book_id: str):
     """
     Purges matching vectors from Pinecone and removes book record.
@@ -181,14 +208,13 @@ async def admin_delete_book(book_id: str):
     if not book:
         raise HTTPException(404, "Book not found.")
 
-    # Purge vectors from Pinecone vector index
     rag_service.delete_book_from_pinecone(book_id)
-
     return {"success": True, "message": f"Book '{book['title']}' and its Pinecone vectors were purged."}
 
 
 # ─── Admin RAG Testing Playground Endpoint ─────────────────────────────────────
 @app.post("/api/admin/test-rag")
+@app.post("/admin/test-rag")
 async def admin_test_rag(request: Request):
     """
     Admin playground to test Pinecone vector retrieval and RAG response generation.
@@ -200,9 +226,7 @@ async def admin_test_rag(request: Request):
     if not query:
         raise HTTPException(400, "Query string is required.")
 
-    # Perform RAG Query and AI Answer Generation on Pinecone
     res = rag_service.generate_rag_answer(query=query, book_id=book_id)
-
     return {
         "success": True,
         "query": query,
@@ -215,6 +239,7 @@ async def admin_test_rag(request: Request):
 
 # ─── Student Real-Time AI Doubt Solver Chat Endpoint ───────────────────────────
 @app.post("/api/chat")
+@app.post("/chat")
 async def student_chat(request: Request):
     """
     Student real-time AI Doubt Solver endpoint connected to Pinecone RAG.
@@ -228,7 +253,6 @@ async def student_chat(request: Request):
         raise HTTPException(400, "Query string is required.")
 
     res = rag_service.generate_rag_answer(query=query, book_id=book_id, chat_history=history)
-
     return {
         "success": True,
         "answer": res["text"],
@@ -239,6 +263,7 @@ async def student_chat(request: Request):
 
 
 @app.get("/api/admin/stats")
+@app.get("/admin/stats")
 async def admin_stats():
     """
     Returns Admin Overview Stats from Pinecone vector store.
@@ -257,7 +282,8 @@ async def admin_stats():
     }
 
 
-# ─── Legacy Golden Dataset Endpoints ──────────────────────────────────────────
+# ─── Golden Dataset Endpoints ──────────────────────────────────────────────────
+@app.post("/api/generate")
 @app.post("/generate")
 async def generate(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(".pdf"):
@@ -277,6 +303,7 @@ async def generate(file: UploadFile = File(...)):
     return JSONResponse({"success": True, "dataset": dataset})
 
 
+@app.post("/api/export/pdf")
 @app.post("/export/pdf")
 async def export_pdf(request: Request):
     body = await request.json()
@@ -292,6 +319,7 @@ async def export_pdf(request: Request):
     )
 
 
+@app.post("/api/export/docx")
 @app.post("/export/docx")
 async def export_docx(request: Request):
     body = await request.json()
@@ -305,6 +333,70 @@ async def export_docx(request: Request):
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers={"Content-Disposition": f'attachment; filename="golden_dataset_{ts}.docx"'},
     )
+
+
+@app.post("/api/admin/golden-dataset/accept")
+@app.post("/admin/golden-dataset/accept")
+async def accept_golden_dataset(request: Request):
+    body = await request.json()
+    section_name = body.get("section_name", "").strip() or "Section 1.1"
+    dataset = body.get("dataset")
+    pdf_filename = body.get("pdf_filename", "")
+    book_id = body.get("book_id", "legal")
+
+    if not dataset:
+        raise HTTPException(400, "Dataset payload is required.")
+
+    rec_id = save_accepted_golden_dataset(
+        section_name=section_name,
+        dataset_json=dataset,
+        book_id=book_id,
+        pdf_filename=pdf_filename
+    )
+
+    return {
+        "success": True,
+        "message": f"Section '{section_name}' accepted and published to Legal book!",
+        "record_id": rec_id,
+        "section_name": section_name
+    }
+
+
+@app.get("/api/admin/golden-dataset/sections")
+@app.get("/admin/golden-dataset/sections")
+async def list_accepted_sections(book_id: str = "legal"):
+    sections = get_accepted_sections(book_id=book_id)
+    return {"success": True, "sections": sections}
+
+
+@app.delete("/api/admin/golden-dataset/sections/{section_id}")
+@app.delete("/admin/golden-dataset/sections/{section_id}")
+async def admin_delete_section(section_id: str):
+    """
+    Deletes an accepted Golden Dataset section from the MSSQL database.
+    """
+    success = delete_accepted_section(section_id)
+    if not success:
+        raise HTTPException(404, f"Section '{section_id}' not found in MSSQL database.")
+    return {"success": True, "message": f"Section '{section_id}' was successfully deleted from Legal book in MSSQL."}
+
+
+@app.put("/api/admin/golden-dataset/sections/{section_id}")
+@app.put("/admin/golden-dataset/sections/{section_id}")
+async def admin_update_section(section_id: str, request: Request):
+    """
+    Replaces/updates an accepted Golden Dataset section in the MSSQL database.
+    """
+    body = await request.json()
+    section_name = body.get("section_name", "").strip() or section_id
+    dataset = body.get("dataset")
+    if not dataset:
+        raise HTTPException(400, "Updated dataset JSON payload is required.")
+        
+    success = update_accepted_section(section_id=section_id, section_name=section_name, dataset_json=dataset)
+    if not success:
+        raise HTTPException(404, f"Section '{section_id}' not found in MSSQL database.")
+    return {"success": True, "message": f"Section '{section_name}' successfully updated in Legal book in MSSQL."}
 
 
 if __name__ == "__main__":

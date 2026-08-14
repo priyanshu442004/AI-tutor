@@ -1,7 +1,7 @@
-import { CheckCircle2, BookOpen, Sparkles } from 'lucide-react'
+import { CheckCircle2, BookOpen, Sparkles, ShieldCheck } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
 
-// Parses inline bolding (**text**) and italics (*text*) to render clean HTML <strong> and <em> without raw asterisks
-function renderStyledInlineText(text) {
+function renderStyledInlineText(text, isDark) {
   if (!text) return null
   const regex = /(\*\*[^*]+\*\*|\*[^*]+\*)/g
   const parts = []
@@ -16,13 +16,13 @@ function renderStyledInlineText(text) {
     const matched = match[0]
     if (matched.startsWith('**') && matched.endsWith('**')) {
       parts.push(
-        <strong key={key++} className="font-bold text-white">
+        <strong key={key++} className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
           {matched.slice(2, -2)}
         </strong>
       )
     } else if (matched.startsWith('*') && matched.endsWith('*')) {
       parts.push(
-        <em key={key++} className="italic text-indigo-200">
+        <em key={key++} className={`italic font-medium ${isDark ? 'text-indigo-300' : 'text-indigo-700'}`}>
           {matched.slice(1, -1)}
         </em>
       )
@@ -37,108 +37,120 @@ function renderStyledInlineText(text) {
   return parts.length > 0 ? parts : text
 }
 
-// Rich Student-Centered Message Formatter: Renders section-based UI cards, example boxes, and math callouts
 export default function FormattedMessage({ text }) {
+  const { isDark } = useTheme()
   if (!text) return null
 
   const lines = text.split('\n')
-  let currentSection = null
 
   return (
-    <div className="space-y-2.5 text-xs leading-relaxed text-slate-200 font-sans">
+    <div className={`space-y-2.5 text-xs leading-relaxed font-sans ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
       {lines.map((line, idx) => {
         const trimmed = line.trim()
         if (!trimmed) return null
 
         const cleanLine = trimmed.replace(/^#{1,6}\s*/, '')
 
-        // Detect Section Headers
-        if (/^Direct Answer:/i.test(trimmed)) {
-          currentSection = 'direct'
-          const content = cleanLine.replace(/^Direct Answer:\s*/i, '')
+        // Direct Answer / Opinion Header
+        if (/^(Direct Answer|Direct Legal Position|Direct Legal Opinion):/i.test(trimmed)) {
+          const content = cleanLine.replace(/^(Direct Answer|Direct Legal Position|Direct Legal Opinion):\s*/i, '')
           return (
-            <div key={idx} className="p-3 rounded-xl bg-gradient-to-r from-indigo-950/80 to-slate-900 border border-indigo-500/30 space-y-1 shadow-sm">
-              <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-indigo-400 uppercase tracking-wider">
-                <CheckCircle2 size={12} className="text-emerald-400" />
-                <span>Direct Answer</span>
+            <div key={idx} className={`p-3 rounded-xl border space-y-1 shadow-sm ${
+              isDark ? 'bg-indigo-950/60 border-indigo-800' : 'bg-indigo-50/70 border-indigo-200'
+            }`}>
+              <div className={`flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider ${
+                isDark ? 'text-indigo-300' : 'text-indigo-700'
+              }`}>
+                <CheckCircle2 size={12} className="text-emerald-500" />
+                <span>{/Legal/i.test(trimmed) ? 'Direct Legal Position' : 'Direct Answer'}</span>
               </div>
-              <p className="text-xs font-medium text-slate-100 leading-relaxed">
-                {renderStyledInlineText(content || cleanLine)}
+              <p className={`text-xs font-semibold leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {renderStyledInlineText(content || cleanLine, isDark)}
               </p>
             </div>
           )
         }
 
-        if (/^(Key Concept Breakdown|Key Principles|Key Rules):/i.test(trimmed)) {
-          currentSection = 'breakdown'
+        // Section Breakdown Header
+        if (/^(Key Concept Breakdown|Statutory Framework & Case Precedents|Key Principles|Key Rules):/i.test(trimmed)) {
           return (
-            <div key={idx} className="pt-2 font-extrabold text-indigo-300 text-xs tracking-wider uppercase flex items-center gap-1.5 border-t border-slate-800/80 mt-3">
-              <BookOpen size={13} className="text-indigo-400" />
-              <span>Key Concept Breakdown</span>
+            <div key={idx} className={`pt-2 font-extrabold text-xs tracking-wider uppercase flex items-center gap-1.5 border-t mt-3 ${
+              isDark ? 'text-indigo-300 border-slate-800' : 'text-indigo-900 border-slate-200'
+            }`}>
+              <BookOpen size={13} className="text-indigo-500" />
+              <span>{cleanLine}</span>
             </div>
           )
         }
 
-        if (/^(Step-by-Step Worked Example|Practical Example|Example):/i.test(trimmed)) {
-          currentSection = 'example'
-          const content = cleanLine.replace(/^(Step-by-Step Worked Example|Practical Example|Example):\s*/i, '')
+        // Worked Example / Implications Header
+        if (/^(Step-by-Step Worked Example|Practical & Corporate Implications|Practical Example|Example):/i.test(trimmed)) {
+          const content = cleanLine.replace(/^(Step-by-Step Worked Example|Practical & Corporate Implications|Practical Example|Example):\s*/i, '')
           return (
-            <div key={idx} className="pt-2 mt-3 border-t border-slate-800/80 space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider">
-                <Sparkles size={12} className="text-amber-400" />
-                <span>Step-by-Step Worked Example</span>
+            <div key={idx} className={`pt-2 mt-3 border-t space-y-1 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+              <div className={`flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider ${
+                isDark ? 'text-emerald-400' : 'text-emerald-700'
+              }`}>
+                <Sparkles size={12} className="text-amber-500" />
+                <span>{cleanLine.includes('Corporate') ? 'Practical & Corporate Implications' : 'Step-by-Step Worked Example'}</span>
               </div>
               {content && (
-                <p className="text-xs text-slate-200">
-                  {renderStyledInlineText(content)}
+                <p className={isDark ? 'text-slate-200' : 'text-slate-800'}>
+                  {renderStyledInlineText(content, isDark)}
                 </p>
               )}
             </div>
           )
         }
 
-        if (/^(Pro Student Tip|Exam Tip|Student Tip):/i.test(trimmed)) {
-          currentSection = 'tip'
-          const content = cleanLine.replace(/^(Pro Student Tip|Exam Tip|Student Tip):\s*/i, '')
+        // Pro Tip / Recommendation Box
+        if (/^(Pro Student Tip|Strategic Recommendation|Exam Tip|Student Tip):/i.test(trimmed)) {
+          const content = cleanLine.replace(/^(Pro Student Tip|Strategic Recommendation|Exam Tip|Student Tip):\s*/i, '')
           return (
-            <div key={idx} className="p-3 rounded-xl bg-amber-950/30 border border-amber-500/30 text-amber-200 space-y-1 my-2 shadow-sm">
-              <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-amber-400 uppercase tracking-wider">
-                <Sparkles size={12} />
-                <span>Pro Exam Tip</span>
+            <div key={idx} className={`p-3 rounded-xl border space-y-1 my-2 shadow-sm ${
+              isDark ? 'bg-amber-950/60 border-amber-800/80 text-amber-200' : 'bg-amber-50/80 border-amber-200 text-amber-900'
+            }`}>
+              <div className={`flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider ${
+                isDark ? 'text-amber-300' : 'text-amber-800'
+              }`}>
+                <Sparkles size={12} className="text-amber-500" />
+                <span>{cleanLine.includes('Recommendation') ? 'Strategic Recommendation' : 'Pro Exam Tip'}</span>
               </div>
-              <p className="text-xs font-medium leading-relaxed text-amber-100">
-                {renderStyledInlineText(content || cleanLine)}
+              <p className={`text-xs font-medium leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {renderStyledInlineText(content || cleanLine, isDark)}
               </p>
             </div>
           )
         }
 
-        // Math Step / Solution Calculation Box (e.g., Step 1:, Step 2:, Formula:)
+        // Code / Formula Box
         const isMathStep = /^(Step\s*\d+:|Formula:|Problem:|Solution:|Proof:)/i.test(trimmed)
         if (isMathStep) {
           return (
-            <div key={idx} className="p-2.5 rounded-lg bg-slate-950 border border-indigo-500/20 font-mono text-[11px] text-indigo-200 my-1 shadow-inner">
-              {renderStyledInlineText(cleanLine)}
+            <div key={idx} className={`p-2.5 rounded-lg border font-mono text-[11px] my-1 ${
+              isDark ? 'bg-slate-950 border-slate-800 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-900'
+            }`}>
+              {renderStyledInlineText(cleanLine, isDark)}
             </div>
           )
         }
 
-        // Bullet Point Rendering
+        // Bullet Point
         const isBullet = /^[•\*\-\d+\.]\s*/.test(trimmed)
         if (isBullet) {
           const bulletContent = cleanLine.replace(/^[•\*\-\d+\.]\s*/, '')
           return (
             <div key={idx} className="flex items-start gap-2 pl-2 my-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 flex-shrink-0" />
-              <div className="flex-1">{renderStyledInlineText(bulletContent)}</div>
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0" />
+              <div className="flex-1">{renderStyledInlineText(bulletContent, isDark)}</div>
             </div>
           )
         }
 
         // Standard Paragraph
         return (
-          <p key={idx} className="leading-relaxed text-slate-200">
-            {renderStyledInlineText(cleanLine)}
+          <p key={idx} className={`leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
+            {renderStyledInlineText(cleanLine, isDark)}
           </p>
         )
       })}

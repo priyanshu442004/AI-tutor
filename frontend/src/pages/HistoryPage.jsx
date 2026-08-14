@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { History, BookOpen, MessageSquare, ArrowRight, Trash2, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
+import { History, BookOpen, MessageSquare, ArrowRight, Trash2, Clock, CheckCircle2 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { API_BASE_URL } from '../config'
+import { useTheme } from '../context/ThemeContext'
 
 export default function HistoryPage() {
   const navigate = useNavigate()
+  const { isDark } = useTheme()
   const [books, setBooks] = useState([])
   const [historyItems, setHistoryItems] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -15,13 +17,11 @@ export default function HistoryPage() {
     async function loadData() {
       setIsLoading(true)
       try {
-        // Fetch active books from backend/Pinecone registry
         const res = await fetch(`${API_BASE_URL}/api/books`)
         const data = await res.json()
         const activeBooks = data.success ? data.books || [] : []
         setBooks(activeBooks)
 
-        // Scan localStorage for all ai_tutor_history_ keys
         const items = []
         const activeBookIds = new Set(activeBooks.map((b) => b.id))
 
@@ -30,7 +30,6 @@ export default function HistoryPage() {
           if (key && key.startsWith('ai_tutor_history_')) {
             const bookId = key.replace('ai_tutor_history_', '')
             
-            // Filter: ONLY include chats for books that currently exist in Pinecone database (not deleted by admin)
             if (activeBookIds.has(bookId)) {
               try {
                 const rawHistory = localStorage.getItem(key)
@@ -70,7 +69,6 @@ export default function HistoryPage() {
   }, [])
 
   const handleContinueChat = (book) => {
-    // Navigate to home student page with the selected book
     navigate('/', { state: { selectedBook: book } })
   }
 
@@ -87,28 +85,38 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070b15] text-slate-100 flex flex-col font-sans">
+    <div className={`min-h-screen flex flex-col font-sans transition-colors ${
+      isDark ? 'bg-[#070b15] text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
       <Navbar />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b ${
+          isDark ? 'border-slate-800' : 'border-slate-200'
+        }`}>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <div className={`p-2 rounded-xl border ${
+                isDark ? 'bg-indigo-950/60 text-indigo-400 border-indigo-800' : 'bg-indigo-50 text-indigo-600 border-indigo-200'
+              }`}>
                 <History size={20} />
               </div>
-              <h1 className="text-2xl font-black text-white tracking-tight">Your Chat History</h1>
+              <h1 className={`text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Your Chat History</h1>
             </div>
-            <p className="text-xs text-slate-400">
-              Resume your previous doubt discussions with AI Tutor across active administrator textbooks.
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Resume your previous doubt discussions with AI Tutor across active textbooks.
             </p>
           </div>
 
           {historyItems.length > 0 && (
             <button
               onClick={handleClearAllHistory}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-rose-950/40 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 text-xs font-semibold transition-all w-fit"
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all w-fit shadow-xs ${
+                isDark
+                  ? 'bg-slate-900 hover:bg-rose-950/60 border-slate-800 hover:border-rose-800 text-slate-300 hover:text-rose-300'
+                  : 'bg-white hover:bg-rose-50 border-slate-200 hover:border-rose-300 text-slate-600 hover:text-rose-700'
+              }`}
             >
               <Trash2 size={14} />
               <span>Clear All History</span>
@@ -118,26 +126,32 @@ export default function HistoryPage() {
 
         {/* Loading State */}
         {isLoading ? (
-          <div className="py-20 text-center space-y-3 bg-slate-900/40 border border-slate-800/80 rounded-2xl">
-            <Clock size={28} className="animate-spin text-indigo-400 mx-auto" />
-            <p className="text-xs text-slate-400">Loading your saved conversations...</p>
+          <div className={`py-20 text-center space-y-3 border rounded-2xl shadow-sm ${
+            isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}>
+            <Clock size={28} className="animate-spin text-indigo-500 mx-auto" />
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Loading your saved conversations...</p>
           </div>
         ) : historyItems.length === 0 ? (
           /* Empty History State */
-          <div className="py-16 text-center space-y-4 bg-slate-900/40 border border-slate-800/80 rounded-2xl max-w-xl mx-auto px-6">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mx-auto">
+          <div className={`py-16 text-center space-y-4 border rounded-2xl max-w-xl mx-auto px-6 shadow-sm ${
+            isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto border ${
+              isDark ? 'bg-indigo-950/60 text-indigo-400 border-indigo-800' : 'bg-indigo-50 text-indigo-600 border-indigo-100'
+            }`}>
               <MessageSquare size={28} />
             </div>
             <div className="space-y-1.5">
-              <h3 className="text-lg font-bold text-white">No Active Chat History Found</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                You haven't started any conversations yet, or the books associated with your past chats have been updated. Select a textbook from the library to ask your first doubt!
+              <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>No Active Chat History Found</h3>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                You haven't started any conversations yet. Select a textbook from the library to ask your first doubt!
               </p>
             </div>
             <div className="pt-2">
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all"
               >
                 <BookOpen size={16} />
                 <span>Browse Available Textbooks</span>
@@ -152,34 +166,44 @@ export default function HistoryPage() {
                 key={item.bookId}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-slate-900/90 border border-slate-800 hover:border-indigo-500/40 rounded-2xl p-5 shadow-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className={`border rounded-2xl p-5 shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                  isDark
+                    ? 'bg-slate-900/90 border-slate-800 hover:border-indigo-500/40'
+                    : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md'
+                }`}
               >
                 <div className="space-y-2 flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                      isDark ? 'bg-indigo-950/80 text-indigo-300 border-indigo-800' : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                    }`}>
                       {item.book?.category || 'Textbook'}
                     </span>
-                    <span className="text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+                    <span className={`text-[10px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded border ${
+                      isDark ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800' : 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                    }`}>
                       <CheckCircle2 size={11} />
-                      Active Textbook
+                      Active Book
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className={`text-[10px] font-mono ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                       • {item.userQuestionsCount} questions asked ({item.messagesCount} messages total)
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-base font-bold text-slate-100 truncate">
+                    <h3 className={`text-base font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                       {item.book?.title || 'Selected Textbook'}
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 italic">
+                    <p className={`text-xs mt-0.5 line-clamp-1 italic ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       "{item.lastMessage.substring(0, 120)}..."
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800 justify-between md:justify-end">
-                  <span className="text-[10px] text-slate-500 font-mono">
+                <div className={`flex items-center gap-3 pt-2 md:pt-0 border-t md:border-t-0 justify-between md:justify-end ${
+                  isDark ? 'border-slate-800' : 'border-slate-100'
+                }`}>
+                  <span className={`text-[10px] font-mono ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                     {item.lastTimestamp}
                   </span>
 
@@ -187,7 +211,9 @@ export default function HistoryPage() {
                     <button
                       onClick={() => handleDeleteHistory(item.key, item.bookId)}
                       title="Delete chat history for this book"
-                      className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+                      className={`p-2 rounded-xl text-slate-400 hover:text-rose-500 transition-colors ${
+                        isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
+                      }`}
                     >
                       <Trash2 size={15} />
                     </button>

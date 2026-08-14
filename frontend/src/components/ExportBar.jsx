@@ -5,7 +5,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 export default function ExportBar({ dataset }) {
-  const [loading, setLoading] = useState(null) // 'json' | 'pdf' | 'docx'
+  const [loading, setLoading] = useState(null)
 
   const handle = async (type, fn) => {
     setLoading(type)
@@ -25,8 +25,7 @@ export default function ExportBar({ dataset }) {
       label: 'JSON',
       sublabel: 'Machine-readable',
       icon: FileJson,
-      color: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 hover:border-amber-400/60 text-amber-300',
-      spin: 'border-amber-400',
+      color: 'bg-amber-50 border-amber-200 hover:border-amber-400 text-amber-900',
       fn: () => { exportJSON(dataset) },
     },
     {
@@ -34,8 +33,7 @@ export default function ExportBar({ dataset }) {
       label: 'PDF',
       sublabel: 'Printable report',
       icon: FileText,
-      color: 'from-rose-500/20 to-red-500/10 border-rose-500/30 hover:border-rose-400/60 text-rose-300',
-      spin: 'border-rose-400',
+      color: 'bg-rose-50 border-rose-200 hover:border-rose-400 text-rose-900',
       fn: () => exportPDF(dataset),
     },
     {
@@ -43,8 +41,7 @@ export default function ExportBar({ dataset }) {
       label: 'DOCX',
       sublabel: 'Word document',
       icon: File,
-      color: 'from-sky-500/20 to-blue-500/10 border-sky-500/30 hover:border-sky-400/60 text-sky-300',
-      spin: 'border-sky-400',
+      color: 'bg-sky-50 border-sky-200 hover:border-sky-400 text-sky-900',
       fn: () => exportDOCX(dataset),
     },
   ]
@@ -63,23 +60,23 @@ export default function ExportBar({ dataset }) {
           disabled={loading !== null}
           className={`
             flex-1 relative flex items-center gap-3 px-5 py-4 rounded-xl border
-            bg-gradient-to-br transition-all duration-200 cursor-pointer
+            transition-all duration-200 cursor-pointer shadow-sm
             disabled:opacity-60 disabled:cursor-not-allowed
             group ${color}
           `}
         >
-          <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0 border border-slate-200 shadow-xs">
             {loading === key ? (
-              <div className={`w-5 h-5 border-2 border-t-transparent rounded-full animate-spin ${color.split(' ').find(c => c.startsWith('text-'))}`} />
+              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
             ) : (
               <Icon size={18} />
             )}
           </div>
           <div className="text-left">
             <p className="text-sm font-bold leading-none mb-0.5">{label}</p>
-            <p className="text-xs opacity-70 leading-none">{sublabel}</p>
+            <p className="text-xs text-slate-500 leading-none">{sublabel}</p>
           </div>
-          <Download size={14} className="ml-auto opacity-50 group-hover:opacity-100 transition-opacity" />
+          <Download size={14} className="ml-auto text-slate-400 group-hover:text-slate-700 transition-colors" />
         </button>
       ))}
     </motion.div>

@@ -11,11 +11,16 @@ import { Link } from 'react-router-dom'
 import UploadZone from '../components/UploadZone'
 import DatasetViewer from '../components/DatasetViewer'
 import ExportBar from '../components/ExportBar'
-import { generateDataset } from '../api'
+import { generateDataset, acceptGoldenDataset } from '../api'
 import AdminAuthGuard from '../components/AdminAuthGuard'
+import { useTheme } from '../context/ThemeContext'
 
 export default function TestPage() {
+  const { isDark } = useTheme()
   const [file, setFile] = useState(null)
+  const [sectionName, setSectionName] = useState('Section 1.1')
+  const [isAccepting, setIsAccepting] = useState(false)
+  const [isAccepted, setIsAccepted] = useState(false)
   const [phase, setPhase] = useState('idle')
   const [uploadPct, setUploadPct] = useState(0)
   const [dataset, setDataset] = useState(null)
@@ -24,11 +29,41 @@ export default function TestPage() {
 
   const reset = () => {
     setFile(null)
+    setSectionName('Section 1.1')
+    setIsAccepted(false)
+    setIsAccepting(false)
     setPhase('idle')
     setUploadPct(0)
     setDataset(null)
     setError(null)
     setElapsedSec(0)
+  }
+
+  const handleAcceptDataset = async () => {
+    if (!dataset || !sectionName.trim()) {
+      toast.error('Please specify a valid section name (e.g. Section 1.1).')
+      return
+    }
+
+    setIsAccepting(true)
+    try {
+      const res = await acceptGoldenDataset({
+        section_name: sectionName.trim(),
+        dataset: dataset,
+        pdf_filename: file?.name || '',
+        book_id: 'legal'
+      })
+      if (res.success) {
+        setIsAccepted(true)
+        toast.success(`Published to Legal book under '${sectionName.trim()}'!`)
+      } else {
+        toast.error(res.message || 'Failed to accept dataset.')
+      }
+    } catch (err) {
+      toast.error(`Accept Error: ${err.message}`)
+    } finally {
+      setIsAccepting(false)
+    }
   }
 
   const handleGenerate = async () => {
@@ -65,64 +100,69 @@ export default function TestPage() {
 
   return (
     <AdminAuthGuard>
-      <div className="min-h-screen bg-[#0a0f1e] text-slate-100 pb-16">
+      <div className={`min-h-screen pb-16 transition-colors ${
+        isDark ? 'bg-[#070b15] text-slate-100' : 'bg-slate-50 text-slate-900'
+      }`}>
         <Toaster
           position="top-right"
           toastOptions={{
-            style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid #334155', fontSize: '14px' },
-            success: { iconTheme: { primary: '#10b981', secondary: '#0a0f1e' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#0a0f1e' } },
+            style: {
+              background: isDark ? '#0f172a' : '#ffffff',
+              color: isDark ? '#f8fafc' : '#0f172a',
+              border: isDark ? '1px solid #1e293b' : '1px solid #e2e8f0',
+              fontSize: '14px'
+            },
+            success: { iconTheme: { primary: '#10b981', secondary: '#ffffff' } },
+            error: { iconTheme: { primary: '#ef4444', secondary: '#ffffff' } },
           }}
         />
-
-        {/* Ambient background */}
-        <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-32 -left-32 w-96 h-96 bg-indigo-600/8 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -right-32 w-80 h-80 bg-violet-600/6 rounded-full blur-3xl" />
-        </div>
 
         <div className="relative max-w-5xl mx-auto px-4 py-8 sm:px-6">
           {/* Back Link */}
           <div className="mb-6 flex items-center justify-between">
             <Link
               to="/admin"
-              className="flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="flex items-center gap-2 text-xs font-bold text-indigo-500 hover:text-indigo-400 transition-colors"
             >
               <ArrowLeft size={14} />
               <span>Back to Admin Dashboard</span>
             </Link>
-            <span className="text-xs px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-mono">
+            <span className={`text-xs px-3 py-1 rounded-full border font-mono ${
+              isDark ? 'bg-indigo-950/60 border-indigo-800 text-indigo-300' : 'bg-indigo-50 border-indigo-200 text-indigo-700'
+            }`}>
               Route: /test
             </span>
           </div>
 
-        {/* ── Header ── */}
+        {/* Header */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <BrainCircuit size={20} className="text-white" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white">
+              <BrainCircuit size={20} />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-violet-400 to-sky-400 bg-clip-text text-transparent">
-                GoldenGen AI (Testing Backend)
+              <h1 className={`text-xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                GoldenGen AI Generator
               </h1>
-              <p className="text-xs text-slate-400 font-medium">RAG Knowledge Base & Golden Dataset Generator</p>
+              <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>RAG Knowledge Base & Legal Golden Dataset System</p>
             </div>
           </div>
           <div className="max-w-2xl">
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-50 leading-tight mb-3">
+            <h2 className={`text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-3 ${
+              isDark ? 'text-white' : 'text-slate-900'
+            }`}>
               Upload PDF to generate{' '}
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">
                 Golden Datasets
               </span>
             </h2>
-            <p className="text-base text-slate-400 leading-relaxed">
-              Upload an educational PDF and DeepSeek AI will generate a complete, 9-section structured knowledge base ready for vector database ingestion.
+            <p className={`text-base leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              Upload an educational or legal PDF and DeepSeek AI will generate a complete, 9-section structured knowledge base ready for MSSQL database & Pinecone ingestion.
             </p>
           </div>
         </header>
 
-        {/* ── Main content ── */}
+        {/* Main Content */}
         <AnimatePresence mode="wait">
           {phase !== 'done' ? (
             <motion.div
@@ -130,12 +170,35 @@ export default function TestPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="bg-slate-800/30 border border-slate-700/40 rounded-2xl p-6 sm:p-8 mb-8"
+              className={`border rounded-2xl p-6 sm:p-8 mb-8 shadow-sm ${
+                isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'
+              }`}
             >
-              <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
-                <Database size={15} className="text-indigo-400" />
+              <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${
+                isDark ? 'text-slate-200' : 'text-slate-800'
+              }`}>
+                <Database size={15} className="text-indigo-500" />
                 Upload Source PDF
               </h3>
+
+              {/* Section Name Input */}
+              <div className="mt-4 mb-4 space-y-1.5">
+                <label className={`text-xs font-bold block ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                  Section Name <span className="text-indigo-400 font-normal">(Required for Legal Book Publishing e.g., section 1.1, section 1.2)</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. section 1.1, section 1.2"
+                  value={sectionName}
+                  onChange={(e) => setSectionName(e.target.value)}
+                  className={`w-full px-4 py-2.5 rounded-xl border text-xs focus:outline-none focus:border-indigo-500 ${
+                    isDark
+                      ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white'
+                  }`}
+                />
+              </div>
 
               <UploadZone
                 onFile={setFile}
@@ -147,12 +210,14 @@ export default function TestPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 flex items-start gap-3 p-4 bg-rose-500/8 border border-rose-500/25 rounded-xl"
+                  className={`mt-4 flex items-start gap-3 p-4 rounded-xl border ${
+                    isDark ? 'bg-rose-950/60 border-rose-800 text-rose-200' : 'bg-rose-50 border-rose-200 text-rose-900'
+                  }`}
                 >
-                  <AlertCircle size={17} className="text-rose-400 flex-shrink-0 mt-0.5" />
+                  <AlertCircle size={17} className="text-rose-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-rose-300 mb-0.5">Generation failed</p>
-                    <p className="text-xs text-rose-300/70 leading-relaxed">{error}</p>
+                    <p className="text-sm font-semibold mb-0.5">Generation failed</p>
+                    <p className="text-xs leading-relaxed opacity-90">{error}</p>
                   </div>
                 </motion.div>
               )}
@@ -167,7 +232,7 @@ export default function TestPage() {
                     bg-gradient-to-r from-indigo-600 to-violet-600
                     hover:from-indigo-500 hover:to-violet-500
                     disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-all duration-200 shadow-lg shadow-indigo-500/20
+                    transition-all duration-200 shadow-md shadow-indigo-600/20
                     active:scale-[0.98]
                   "
                 >
@@ -188,7 +253,11 @@ export default function TestPage() {
                 {phase === 'error' && (
                   <button
                     onClick={reset}
-                    className="flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-slate-100 border border-slate-600 hover:border-slate-500 transition-colors"
+                    className={`flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold border transition-colors ${
+                      isDark
+                        ? 'text-slate-300 hover:text-white border-slate-700 hover:bg-slate-800'
+                        : 'text-slate-700 hover:text-slate-900 border-slate-300 hover:bg-slate-100'
+                    }`}
                   >
                     <RotateCcw size={15} />
                     Start over
@@ -200,18 +269,22 @@ export default function TestPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mt-5 p-4 bg-indigo-500/6 border border-indigo-500/20 rounded-xl"
+                  className={`mt-5 p-4 border rounded-xl ${
+                    isDark ? 'bg-indigo-950/60 border-indigo-800' : 'bg-indigo-50 border-indigo-200'
+                  }`}
                 >
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-3">
                     <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        isDark ? 'bg-indigo-900/80' : 'bg-indigo-100'
+                      }`}>
                         <BrainCircuit size={16} className="text-indigo-400" />
                       </div>
-                      <div className="absolute inset-0 rounded-full border-2 border-indigo-400/40 border-t-indigo-400 animate-spin" />
+                      <div className="absolute inset-0 rounded-full border-2 border-indigo-500/40 border-t-indigo-500 animate-spin" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-indigo-300">DeepSeek AI is working…</p>
-                      <p className="text-xs text-slate-400">Extracting structure, generating pedagogy, building RAG metadata</p>
+                      <p className={`text-sm font-semibold ${isDark ? 'text-indigo-200' : 'text-indigo-900'}`}>DeepSeek AI is working…</p>
+                      <p className={`text-xs ${isDark ? 'text-indigo-300' : 'text-indigo-700'}`}>Extracting structure, generating pedagogy, building RAG metadata</p>
                     </div>
                   </div>
                 </motion.div>
@@ -222,32 +295,103 @@ export default function TestPage() {
               key="success-banner"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-emerald-500/8 border border-emerald-500/25 rounded-2xl p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+              className={`border rounded-2xl p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm ${
+                isDark ? 'bg-emerald-950/60 border-emerald-800' : 'bg-emerald-50 border-emerald-200'
+              }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                <CheckCircle2 size={20} className="text-emerald-400" />
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  isDark ? 'bg-emerald-900/80 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                }`}>
+                  <CheckCircle2 size={20} />
+                </div>
+                <div>
+                  <p className={`text-sm font-bold mb-0.5 flex items-center gap-2 ${
+                    isDark ? 'text-emerald-200' : 'text-emerald-900'
+                  }`}>
+                    <span>Golden Dataset generated ({subTopicsCount} sub-topics)</span>
+                    {isAccepted && (
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold border ${
+                        isDark ? 'bg-emerald-900/80 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      }`}>
+                        ✓ Published to Legal Book
+                      </span>
+                    )}
+                  </p>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    Section Name: <span className="font-mono text-indigo-400 font-bold">{sectionName}</span> · {file?.name} · Completed in {elapsedSec}s
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-emerald-300 mb-0.5">
-                  Golden Dataset generated — {subTopicsCount} sub-topics created
-                </p>
-                <p className="text-xs text-slate-400">
-                  {file?.name} · Completed in {elapsedSec}s with DeepSeek AI
-                </p>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={reset}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border transition-colors flex-shrink-0 ${
+                    isDark
+                      ? 'text-slate-300 hover:text-white border-slate-700 hover:bg-slate-800'
+                      : 'text-slate-700 hover:text-slate-900 border-slate-300 hover:bg-slate-100'
+                  }`}
+                >
+                  <RotateCcw size={13} />
+                  New PDF
+                </button>
               </div>
-              <button
-                onClick={reset}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-slate-100 border border-slate-600 transition-colors flex-shrink-0"
-              >
-                <RotateCcw size={13} />
-                New PDF
-              </button>
             </motion.div>
           )}
         </AnimatePresence>
 
         {phase === 'done' && dataset && (
           <div className="space-y-6">
+            {/* Accept Section Bar for Legal Book */}
+            <div className={`border rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md ${
+              isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-indigo-200'
+            }`}>
+              <div className="space-y-1 text-left w-full sm:w-auto">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-500">Legal Book Publishing</span>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
+                    isDark ? 'bg-indigo-950/60 text-indigo-300 border-indigo-800' : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                  }`}>MSSQL Database</span>
+                </div>
+                <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Publish this Golden Dataset as <span className="text-emerald-500 font-mono">'{sectionName}'</span> in Legal Book
+                </h4>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Clicking Accept saves this section into the SQL database so students will see it under the Legal book study guides.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <input
+                  type="text"
+                  value={sectionName}
+                  onChange={(e) => setSectionName(e.target.value)}
+                  placeholder="Section Name (e.g. section 1.1)"
+                  className={`px-3.5 py-2.5 rounded-xl border text-xs font-mono focus:outline-none focus:border-indigo-500 max-w-[160px] ${
+                    isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  }`}
+                />
+                <button
+                  onClick={handleAcceptDataset}
+                  disabled={isAccepting || isAccepted}
+                  className={`
+                    flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all flex-shrink-0
+                    ${isAccepted
+                      ? isDark ? 'bg-emerald-950/80 border border-emerald-800 text-emerald-300 cursor-default' : 'bg-emerald-50 border border-emerald-300 text-emerald-800 cursor-default'
+                      : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-600/20'}
+                  `}
+                >
+                  {isAccepting ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <CheckCircle2 size={16} />
+                  )}
+                  <span>{isAccepted ? 'Accepted & Published' : 'Accept'}</span>
+                </button>
+              </div>
+            </div>
+
             <ExportBar dataset={dataset} />
             <DatasetViewer dataset={dataset} />
           </div>

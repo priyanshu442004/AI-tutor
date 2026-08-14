@@ -23,7 +23,19 @@ export async function generateDataset(file, onProgress) {
   return res.data
 }
 
+/** Accept and publish Golden Dataset section to Legal book in SQL DB */
+export async function acceptGoldenDataset({ section_name, dataset, pdf_filename, book_id = 'legal' }) {
+  const res = await api.post('/admin/golden-dataset/accept', {
+    section_name,
+    dataset,
+    pdf_filename,
+    book_id
+  })
+  return res.data
+}
+
 /** Export as PDF — triggers browser download */
+
 export async function exportPDF(dataset) {
   const res = await api.post('/export/pdf', { dataset }, { responseType: 'blob' })
   triggerDownload(res.data, 'application/pdf', 'golden_dataset.pdf')

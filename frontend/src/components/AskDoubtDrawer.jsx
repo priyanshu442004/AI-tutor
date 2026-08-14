@@ -30,13 +30,11 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
     const text = textToSend || query
     if (!text.trim()) return
 
-    // Add user message
     const userMsg = { sender: 'user', text, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
     setMessages((prev) => [...prev, userMsg])
     setQuery('')
     setIsThinking(true)
 
-    // Simulate AI response based on embedded legal knowledge
     setTimeout(() => {
       let responseText = ""
       let citations = []
@@ -66,28 +64,28 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/70 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/30 backdrop-blur-sm">
         <motion.div
           initial={{ x: '100%' }}
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-          className="w-full max-w-lg bg-slate-900 border-l border-slate-800 flex flex-col justify-between shadow-2xl h-full"
+          className="w-full max-w-lg bg-white border-l border-slate-200 flex flex-col justify-between shadow-2xl h-full text-slate-900"
         >
           {/* Drawer Header */}
-          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+          <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md">
                 <Sparkles size={18} />
               </div>
               <div>
-                <h3 className="text-sm font-extrabold text-slate-100 flex items-center gap-2">
+                <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                   <span>Ask Your Doubt</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Vector DB Ready
                   </span>
                 </h3>
-                <p className="text-[11px] text-slate-400 font-medium truncate max-w-[240px]">
+                <p className="text-[11px] text-slate-500 font-medium truncate max-w-[240px]">
                   {activeTopic ? `Topic: ${activeTopic.topic_title}` : selectedBook?.title}
                 </p>
               </div>
@@ -95,49 +93,49 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
 
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+              className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
             >
               <X size={18} />
             </button>
           </div>
 
           {/* Integration Status Notice */}
-          <div className="bg-indigo-500/10 px-4 py-2.5 border-b border-indigo-500/20 flex items-center justify-between text-xs text-indigo-300">
+          <div className="bg-indigo-50 px-4 py-2.5 border-b border-indigo-100 flex items-center justify-between text-xs text-indigo-700">
             <div className="flex items-center gap-2">
-              <Database size={13} className="text-indigo-400" />
+              <Database size={13} className="text-indigo-600" />
               <span>Pinecone Vector Store & Custom Prompt System Ready</span>
             </div>
           </div>
 
           {/* Chat Transcript */}
-          <div className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 scrollbar-thin">
+          <div className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 scrollbar-thin bg-slate-50/50">
             {messages.map((msg, i) => (
               <div
                 key={i}
                 className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'ai' && (
-                  <div className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 flex-shrink-0 mt-1">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 flex-shrink-0 mt-1 shadow-xs">
                     <Bot size={16} />
                   </div>
                 )}
 
                 <div
                   className={`
-                    max-w-[85%] rounded-2xl p-4 text-xs space-y-2 leading-relaxed
+                    max-w-[85%] rounded-2xl p-4 text-xs space-y-2 leading-relaxed shadow-xs
                     ${msg.sender === 'user'
                       ? 'bg-indigo-600 text-white font-medium rounded-tr-none'
-                      : 'bg-slate-800/80 border border-slate-700/60 text-slate-200 rounded-tl-none'}
+                      : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'}
                   `}
                 >
                   <p className="whitespace-pre-wrap font-sans">{msg.text}</p>
 
                   {/* Citations Badges */}
                   {msg.citations?.length > 0 && (
-                    <div className="pt-2 border-t border-slate-700/50 flex flex-wrap items-center gap-1.5">
+                    <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
                       <span className="text-[10px] font-bold text-slate-400">Sources:</span>
                       {msg.citations.map((c, idx) => (
-                        <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                           {c}
                         </span>
                       ))}
@@ -148,7 +146,7 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
                 </div>
 
                 {msg.sender === 'user' && (
-                  <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 flex-shrink-0 mt-1">
+                  <div className="w-8 h-8 rounded-xl bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 flex-shrink-0 mt-1 shadow-xs">
                     <User size={16} />
                   </div>
                 )}
@@ -156,9 +154,9 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
             ))}
 
             {isThinking && (
-              <div className="flex items-center gap-3 text-xs text-indigo-300">
-                <div className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-                  <Sparkles size={16} className="animate-spin" />
+              <div className="flex items-center gap-3 text-xs text-indigo-700">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+                  <Sparkles size={16} className="animate-spin text-amber-500" />
                 </div>
                 <span className="animate-pulse font-medium">Querying vector embeddings & generating answer...</span>
               </div>
@@ -166,16 +164,15 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
           </div>
 
           {/* Suggested Prompts & Input Bar */}
-          <div className="p-4 border-t border-slate-800 bg-slate-900/90 space-y-3">
-            {/* Quick Suggestions */}
+          <div className="p-4 border-t border-slate-200 bg-white space-y-3">
             <div className="space-y-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Suggested Doubts:</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Suggested Doubts:</span>
               <div className="flex flex-wrap gap-1.5">
                 {suggestedQuestions.map((q, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSend(q)}
-                    className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-slate-100 transition-colors text-left truncate max-w-full"
+                    className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition-colors text-left truncate max-w-full"
                   >
                     {q}
                   </button>
@@ -183,7 +180,6 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
               </div>
             </div>
 
-            {/* Input field */}
             <div className="relative flex items-center">
               <input
                 type="text"
@@ -191,12 +187,12 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Ask any doubt regarding statutory sections, case laws..."
-                className="w-full pl-4 pr-12 py-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-4 pr-12 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={!query.trim() || isThinking}
-                className="absolute right-2 p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-40 transition-colors"
+                className="absolute right-2 p-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40 transition-colors shadow-xs"
               >
                 <Send size={14} />
               </button>
