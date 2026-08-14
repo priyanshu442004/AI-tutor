@@ -1,0 +1,156 @@
+================================================================================
+          🚀 AI TUTOR PLATFORM - PRODUCTION REDEPLOYMENT GUIDE
+================================================================================
+Domain: https://aitutor.analytx4t.com
+GitHub: https://github.com/priyanshu442004/AI-tutor.git
+Server Path: /var/www/aitutor
+
+--------------------------------------------------------------------------------
+1. QUICK ROUTINE REDEPLOYMENT (AFTER UPDATING CODE ON GITHUB)
+--------------------------------------------------------------------------------
+Execute these commands on your EC2 terminal whenever you push new updates to GitHub:
+
+cd /var/www/aitutor
+
+# Pull latest code from GitHub main branch
+git pull origin main
+
+# Rebuild Frontend static bundle
+cd /var/www/aitutor/frontend
+npm install
+npm run build
+
+# Update Backend Virtualenv & Restart Service
+cd /var/www/aitutor/backend
+source venv/bin/activate
+uv pip install -r requirements.txt
+sudo systemctl restart aitutor-backend
+
+# Check Service Status
+sudo systemctl status aitutor-backend --no-pager
+
+
+--------------------------------------------------------------------------------
+2. FULL FRESH SERVER DEPLOYMENT FROM SCRATCH (NEW EC2 INSTANCE)
+--------------------------------------------------------------------------------
+
+# Step A: Install System Dependencies & Tooling
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl git software-properties-common build-essential nginx certbot python3-certbot-nginx unixodbc unixodbc-dev
+
+# Install Node.js 20.x LTS
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Install uv (Modern Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
+
+# Install Microsoft ODBC Driver 18 for SQL Server
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+echo "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/ubuntu/24.04/prod noble main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
+sudo apt update
+sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+# Step B: Clone Codebase
+sudo mkdir -p /var/www/aitutor
+sudo chown -R ubuntu:ubuntu /var/www/aitutor
+cd /var/www/aitutor
+git clone https://github.com/priyanshu442004/AI-tutor.git .
+
+# Step C: Configure Backend
+cd /var/www/aitutor/backend
+uv venv --python 3.12 venv
+source venv/bin/activate
+uv pip install -r requirements.txt
+
+# Create /var/www/aitutor/backend/.env (Fill in your production environment keys)
+cat << 'EOF' > /var/www/aitutor/backend/.env
+DEEPSEEK_API_KEY=YOUR_DEEPSEEK_API_KEY
+DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+MAX_TOKENS=12000
+TEMPERATURE=0.2
+CORS_ORIGINS=https://aitutor.analytx4t.com,http://localhost:5173,http://localhost:3000
+OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+EMBEDDING_MODEL=text-embedding-3-small
+PINECONE_API_KEY=YOUR_PINECONE_API_KEY
+PINECONE_INDEX_NAME=ai-tutor
+SQL_CONN_STR=DRIVER={ODBC Driver 18 for SQL Server};SERVER=legal.c5k02aqsif0f.ap-south-1.rds.amazonaws.com,1433;DATABASE=CLAOnline;UID=admin;PWD=YOUR_MSSQL_PASSWORD;Encrypt=yes;TrustServerCertificate=yes;
+LEGAL_PINECONE_API_KEY=YOUR_LEGAL_PINECONE_API_KEY
+LEGAL_PINECONE_INDEX_NAME=cla-online
+EOF
+
+# Create Systemd Service for Backend
+sudo cat << 'EOF' | sudo tee /etc/systemd/system/aitutor-backend.service
+[Unit]
+Description=AI Tutor FastAPI Production Backend Service
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/var/www/aitutor/backend
+ExecStart=/var/www/aitutor/backend/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 4
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now aitutor-backend
+
+# Step D: Configure & Build Frontend
+cd /var/www/aitutor/frontend
+echo "VITE_API_BASE_URL=https://aitutor.analytx4t.com" > .env
+npm install
+npm run build
+
+# Step E: Configure Nginx & SSL Certificate
+sudo cat << 'EOF' | sudo tee /etc/nginx/sites-available/aitutor.analytx4t.com
+server {
+    listen 80;
+    server_name aitutor.analytx4t.com;
+
+    location / {
+        root /var/www/aitutor/frontend/dist;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300s;
+        client_max_body_size 50M;
+    }
+
+    location ~ ^/(admin/|chat|generate|export|health) {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300s;
+        client_max_body_size 50M;
+    }
+}
+EOF
+
+sudo ln -sf /etc/nginx/sites-available/aitutor.analytx4t.com /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+
+# Issue SSL Certificate
+sudo certbot --nginx -d aitutor.analytx4t.com --non-interactive --agree-tos -m admin@analytx4t.com --redirect
+
+================================================================================
