@@ -1,58 +1,49 @@
+import katex from 'katex'
 import { CheckCircle2, BookOpen, Sparkles } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 
 /**
- * Cleans LaTeX math syntax, LaTeX delimiters, and raw markdown artifacts into readable text.
+ * Renders LaTeX math equations using KaTeX.
  */
-function cleanLaTeXMath(str) {
-  if (!str) return ''
-  let text = str
+function MathSnippet({ math, displayMode = false }) {
+  if (!math || !math.trim()) return null
+  try {
+    let clean = math.trim()
 
-  // Strip source citation lines if embedded in body
-  text = text.replace(/^Source:\s*$/i, '')
-  text = text.replace(/^Page\s+\d+\s*$/i, '')
+    // Remove surrounding LaTeX delimiters if passed directly
+    clean = clean.replace(/^\\\[\s*/, '').replace(/\s*\\\]$/, '')
+    clean = clean.replace(/^\\\(\s*/, '').replace(/\s*\\\)$/, '')
+    clean = clean.replace(/^\$\$\s*/, '').replace(/\s*\$\$$/, '')
+    clean = clean.replace(/^\$\s*/, '').replace(/\s*\$$/, '')
 
-  // Remove trailing/standalone asterisks attached to words (e.g. "Given:*", "Step 1:*")
-  text = text.replace(/(\w+):\*/g, '$1:')
-  text = text.replace(/(\w+)\*/g, '$1')
+    // Convert raw ASCII approximations into LaTeX commands if unescaped
+    if (!clean.includes('\\')) {
+      clean = clean.replace(/\bint\b/g, '\\int')
+      clean = clean.replace(/\bfrac\b/g, '\\frac')
+      clean = clean.replace(/\blim\b/g, '\\lim')
+    }
 
-  // Remove LaTeX math delimiters \[ ... \] and \( ... \)
-  text = text.replace(/\\\[\s*/g, '')
-  text = text.replace(/\s*\\\]/g, '')
-  text = text.replace(/\\\(\s*/g, '')
-  text = text.replace(/\s*\\\)/g, '')
+    const html = katex.renderToString(clean, {
+      displayMode,
+      throwOnError: false,
+    })
 
-  // Convert common LaTeX math symbols and expressions into clean Unicode math
-  text = text.replace(/\\lim_\{([^}]+)\}/g, 'lim ($1)')
-  text = text.replace(/\\lim/g, 'lim')
-  text = text.replace(/\\to/g, '→')
-  text = text.replace(/\\rightarrow/g, '→')
-  text = text.replace(/\\quad/g, ' ')
-  text = text.replace(/\\qquad/g, '  ')
-  text = text.replace(/\\text\{([^}]+)\}/g, '$1')
-  text = text.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1 / $2)')
-  text = text.replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
-  text = text.replace(/\\le/g, '≤')
-  text = text.replace(/\\ge/g, '≥')
-  text = text.replace(/\\neq/g, '≠')
-  text = text.replace(/\\approx/g, '≈')
-  text = text.replace(/\\cdot/g, '·')
-  text = text.replace(/\\infty/g, '∞')
-  text = text.replace(/\\times/g, '×')
-  text = text.replace(/\\div/g, '÷')
-  text = text.replace(/\\pm/g, '±')
-
-  // Remove stray remaining backslashes before math variables or commands
-  text = text.replace(/\\([a-zA-Z]+)/g, '$1')
-
-  return text.trim()
+    return (
+      <span
+        dangerouslySetInnerHTML={{ __html: html }}
+        className={displayMode ? 'block my-2 text-center overflow-x-auto py-1.5 px-3 rounded-lg bg-slate-950/20 border border-indigo-500/20' : 'inline-block px-1 font-normal'}
+      />
+    )
+  } catch (e) {
+    return <span className="font-mono text-indigo-400">{math}</span>
+  }
 }
 
-function renderStyledInlineText(rawText, isDark) {
-  if (!rawText) return null
-  const text = cleanLaTeXMath(rawText)
+/**
+ * Renders bolding (**text**) and italics (*text*).
+ */
+function renderStyledInlineText(text, isDark) {
   if (!text) return null
-
   const regex = /(\*\*[^*]+\*\*|\*[^*]+\*)/g
   const parts = []
   let lastIndex = 0
@@ -87,13 +78,59 @@ function renderStyledInlineText(rawText, isDark) {
   return parts.length > 0 ? parts : text
 }
 
+/**
+ * Parses mixed text and LaTeX math delimiters (\(...\), \[...\], $$...$$, $...$).
+ */
+function renderLineWithMathAndStyles(line, isDark) {
+  if (!line) return null
+
+  // Clean trailing standalone asterisks on headers like "Step 1: Find f(3)*"
+  const cleanLine = line.replace(/(\w+):\*/g, '$1:').replace(/(\w+)\*/g, '$1')
+
+  // Math delimiter regex: matches \[...\], \(...\), $$...$$, $...$
+  const mathRegex = /(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|^\$\$[\s\S]*?\$\$|\$[^\$\n]+\$)/g
+
+  const segments = []
+  let lastIdx = 0
+  let match
+  let key = 0
+
+  while ((match = mathRegex.exec(cleanLine)) !== null) {
+    if (match.index > lastIdx) {
+      const textPart = cleanLine.substring(lastIdx, match.index)
+      segments.push(<span key={key++}>{renderStyledInlineText(textPart, isDark)}</span>)
+    }
+
+    const rawMath = match[0]
+    const isDisplay = rawMath.startsWith('\\[') || rawMath.startsWith('$$')
+    segments.push(<MathSnippet key={key++} math={rawMath} displayMode={isDisplay} />)
+
+    lastIdx = mathRegex.lastIndex
+  }
+
+  if (lastIdx < cleanLine.length) {
+    const textPart = cleanLine.substring(lastIdx)
+    segments.push(<span key={key++}>{renderStyledInlineText(textPart, isDark)}</span>)
+  }
+
+  // Fallback: If line contains raw LaTeX math symbols (\int, \frac, e^{...}, \lim) without \( \) wrappers, render whole line as KaTeX math if appropriate
+  if (segments.length === 0 || (segments.length === 1 && typeof segments[0] === 'string')) {
+    if (/(\\int|\\frac|\\lim|e\^\{|\\to|\\sum|\\sqrt)/.test(cleanLine)) {
+      return <MathSnippet math={cleanLine} displayMode={cleanLine.length > 25} />
+    }
+    return renderStyledInlineText(cleanLine, isDark)
+  }
+
+  return segments
+}
+
 export default function FormattedMessage({ text }) {
   const { isDark } = useTheme()
   if (!text) return null
 
   const rawLines = text.split('\n')
 
-  // Filter out standalone Source lines or page numbers
+  // Filter out source lines and standalone markdown separators
   const filteredLines = rawLines.filter((l) => {
     const t = l.trim()
     if (t === 'Source:' || t === 'Sources:' || /^Page\s+\d+$/i.test(t) || t === '--' || t === '---') {
@@ -108,12 +145,12 @@ export default function FormattedMessage({ text }) {
         const trimmed = line.trim()
         if (!trimmed) return null
 
-        // Ignore standalone brackets or dashes
-        if (trimmed === '\\[' || trimmed === '\\]' || trimmed === '\\(' || trimmed === '\\)') return null
+        // Skip standalone LaTeX bracket lines
+        if (trimmed === '\\[' || trimmed === '\\]' || trimmed === '\\(' || trimmed === '\\)' || trimmed === '$$') return null
 
         const cleanLine = trimmed.replace(/^#{1,6}\s*/, '')
 
-        // Direct Answer / Opinion Header
+        // Direct Answer Header
         if (/^(Direct Answer|Direct Legal Position|Direct Legal Opinion):/i.test(trimmed)) {
           const content = cleanLine.replace(/^(Direct Answer|Direct Legal Position|Direct Legal Opinion):\s*/i, '')
           return (
@@ -126,9 +163,9 @@ export default function FormattedMessage({ text }) {
                 <CheckCircle2 size={12} className="text-emerald-500" />
                 <span>{/Legal/i.test(trimmed) ? 'Direct Legal Position' : 'Direct Answer'}</span>
               </div>
-              <p className={`text-xs font-semibold leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {renderStyledInlineText(content || cleanLine, isDark)}
-              </p>
+              <div className={`text-xs font-semibold leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {renderLineWithMathAndStyles(content || cleanLine, isDark)}
+              </div>
             </div>
           )
         }
@@ -140,12 +177,12 @@ export default function FormattedMessage({ text }) {
               isDark ? 'text-indigo-300 border-slate-800' : 'text-indigo-900 border-slate-200'
             }`}>
               <BookOpen size={13} className="text-indigo-500" />
-              <span>{cleanLaTeXMath(cleanLine)}</span>
+              <span>{cleanLine}</span>
             </div>
           )
         }
 
-        // Worked Example / Implications Header
+        // Worked Example Header
         if (/^(Step-by-Step Worked Example|Practical & Corporate Implications|Practical Example|Example):/i.test(trimmed)) {
           const content = cleanLine.replace(/^(Step-by-Step Worked Example|Practical & Corporate Implications|Practical Example|Example):\s*/i, '')
           return (
@@ -157,15 +194,15 @@ export default function FormattedMessage({ text }) {
                 <span>{cleanLine.includes('Corporate') ? 'Practical & Corporate Implications' : 'Step-by-Step Worked Example'}</span>
               </div>
               {content && (
-                <p className={isDark ? 'text-slate-200' : 'text-slate-800'}>
-                  {renderStyledInlineText(content, isDark)}
-                </p>
+                <div className={isDark ? 'text-slate-200' : 'text-slate-800'}>
+                  {renderLineWithMathAndStyles(content, isDark)}
+                </div>
               )}
             </div>
           )
         }
 
-        // Pro Tip / Recommendation Box
+        // Pro Tip Box
         if (/^(Pro Student Tip|Strategic Recommendation|Exam Tip|Student Tip):/i.test(trimmed)) {
           const content = cleanLine.replace(/^(Pro Student Tip|Strategic Recommendation|Exam Tip|Student Tip):\s*/i, '')
           return (
@@ -178,21 +215,30 @@ export default function FormattedMessage({ text }) {
                 <Sparkles size={12} className="text-amber-500" />
                 <span>{cleanLine.includes('Recommendation') ? 'Strategic Recommendation' : 'Pro Exam Tip'}</span>
               </div>
-              <p className={`text-xs font-medium leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {renderStyledInlineText(content || cleanLine, isDark)}
-              </p>
+              <div className={`text-xs font-medium leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {renderLineWithMathAndStyles(content || cleanLine, isDark)}
+              </div>
             </div>
           )
         }
 
-        // Code / Step / Formula Box
-        const isMathStep = /^(Step\s*\d+:|Formula:|Problem:|Solution:|Proof:|Given:|Conclusion:)/i.test(trimmed)
+        // Code / Step / Math Box
+        const isMathStep = /^(Step\s*\d+:|Formula:|Problem:|Solution:|Proof:|Given:|Conclusion:|Answer:|Example\s*\d+:)/i.test(trimmed)
         if (isMathStep) {
           return (
             <div key={idx} className={`p-2.5 rounded-lg border font-mono text-[11px] my-1 ${
               isDark ? 'bg-slate-950 border-slate-800 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-900'
             }`}>
-              {renderStyledInlineText(cleanLine, isDark)}
+              {renderLineWithMathAndStyles(cleanLine, isDark)}
+            </div>
+          )
+        }
+
+        // Display Math Line (e.g. \int e^x dx = e^x + C or int e^{kx} dx = ...)
+        if (/^(\\int|int\s|\\frac|\\lim|e\^\{|\\to|\\sum|\\sqrt)/.test(trimmed)) {
+          return (
+            <div key={idx} className="my-1.5">
+              <MathSnippet math={trimmed} displayMode={true} />
             </div>
           )
         }
@@ -204,16 +250,16 @@ export default function FormattedMessage({ text }) {
           return (
             <div key={idx} className="flex items-start gap-2 pl-2 my-1">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0" />
-              <div className="flex-1">{renderStyledInlineText(bulletContent, isDark)}</div>
+              <div className="flex-1">{renderLineWithMathAndStyles(bulletContent, isDark)}</div>
             </div>
           )
         }
 
         // Standard Paragraph
         return (
-          <p key={idx} className={`leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
-            {renderStyledInlineText(cleanLine, isDark)}
-          </p>
+          <div key={idx} className={`leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
+            {renderLineWithMathAndStyles(cleanLine, isDark)}
+          </div>
         )
       })}
     </div>
