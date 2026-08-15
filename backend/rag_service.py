@@ -287,6 +287,8 @@ Deliver a rigorous, authoritative legal analysis for this inquiry.
             "Provide 1 high-value exam tip, memory shortcut, or common pitfall to avoid.\n\n"
             "FORMATTING RULES:\n"
             "- Keep language engaging, clear, and easy for students to understand.\n"
+            "- For mathematical equations, write them in clear, readable text (e.g. f(x) = 2x - 1, lim (x → 3) f(x) = 5). Do NOT output raw LaTeX math delimiters like \\( or \\[ or \\lim_{x \\to a}.\n"
+            "- Do NOT append 'Source:' or page numbers or citation lists at the end of the response.\n"
             "- Do NOT use developer jargon."
         )
         user_prompt = f"""

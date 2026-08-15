@@ -152,15 +152,7 @@ export default function AskDoubtBot({ selectedBook }) {
                         `}
                       >
                         <p className="whitespace-pre-wrap font-sans">{msg.text}</p>
-                        {msg.citations?.length > 0 && (
-                          <div className="pt-1 flex flex-wrap gap-1">
-                            {msg.citations.map((c, i) => (
-                              <span key={i} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                {c}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+
                         <span className="block text-[9px] text-slate-400 text-right">{msg.time}</span>
                       </div>
 

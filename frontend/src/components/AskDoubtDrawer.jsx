@@ -137,17 +137,7 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
                 >
                   <p className="whitespace-pre-wrap font-sans">{msg.text}</p>
 
-                  {/* Citations Badges */}
-                  {msg.citations?.length > 0 && (
-                    <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-slate-400">Sources:</span>
-                      {msg.citations.map((c, idx) => (
-                        <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
-                          {c}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+
 
                   <span className="block text-[10px] text-slate-400 text-right">{msg.time}</span>
                 </div>

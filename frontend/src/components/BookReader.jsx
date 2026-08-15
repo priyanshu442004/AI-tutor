@@ -307,21 +307,7 @@ export default function BookReader({ book, onBackToLibrary }) {
                   </div>
                 )}
 
-                {msg.citations?.length > 0 && (
-                  <div className="pt-1.5 flex flex-wrap gap-1 items-center">
-                    <span className="text-[9px] text-slate-400 font-medium mr-1">Source:</span>
-                    {msg.citations.map((c, i) => (
-                      <span
-                        key={i}
-                        className={`text-[9px] font-mono px-2 py-0.5 rounded-md border ${
-                          isDark ? 'bg-indigo-950/60 text-indigo-300 border-indigo-800' : 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                        }`}
-                      >
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                )}
+
 
                 <span className="block text-[9px] text-slate-400 text-right font-mono">
                   {msg.timestamp}

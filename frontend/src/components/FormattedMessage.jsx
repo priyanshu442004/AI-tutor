@@ -1,8 +1,58 @@
-import { CheckCircle2, BookOpen, Sparkles, ShieldCheck } from 'lucide-react'
+import { CheckCircle2, BookOpen, Sparkles } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 
-function renderStyledInlineText(text, isDark) {
+/**
+ * Cleans LaTeX math syntax, LaTeX delimiters, and raw markdown artifacts into readable text.
+ */
+function cleanLaTeXMath(str) {
+  if (!str) return ''
+  let text = str
+
+  // Strip source citation lines if embedded in body
+  text = text.replace(/^Source:\s*$/i, '')
+  text = text.replace(/^Page\s+\d+\s*$/i, '')
+
+  // Remove trailing/standalone asterisks attached to words (e.g. "Given:*", "Step 1:*")
+  text = text.replace(/(\w+):\*/g, '$1:')
+  text = text.replace(/(\w+)\*/g, '$1')
+
+  // Remove LaTeX math delimiters \[ ... \] and \( ... \)
+  text = text.replace(/\\\[\s*/g, '')
+  text = text.replace(/\s*\\\]/g, '')
+  text = text.replace(/\\\(\s*/g, '')
+  text = text.replace(/\s*\\\)/g, '')
+
+  // Convert common LaTeX math symbols and expressions into clean Unicode math
+  text = text.replace(/\\lim_\{([^}]+)\}/g, 'lim ($1)')
+  text = text.replace(/\\lim/g, 'lim')
+  text = text.replace(/\\to/g, '→')
+  text = text.replace(/\\rightarrow/g, '→')
+  text = text.replace(/\\quad/g, ' ')
+  text = text.replace(/\\qquad/g, '  ')
+  text = text.replace(/\\text\{([^}]+)\}/g, '$1')
+  text = text.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1 / $2)')
+  text = text.replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+  text = text.replace(/\\le/g, '≤')
+  text = text.replace(/\\ge/g, '≥')
+  text = text.replace(/\\neq/g, '≠')
+  text = text.replace(/\\approx/g, '≈')
+  text = text.replace(/\\cdot/g, '·')
+  text = text.replace(/\\infty/g, '∞')
+  text = text.replace(/\\times/g, '×')
+  text = text.replace(/\\div/g, '÷')
+  text = text.replace(/\\pm/g, '±')
+
+  // Remove stray remaining backslashes before math variables or commands
+  text = text.replace(/\\([a-zA-Z]+)/g, '$1')
+
+  return text.trim()
+}
+
+function renderStyledInlineText(rawText, isDark) {
+  if (!rawText) return null
+  const text = cleanLaTeXMath(rawText)
   if (!text) return null
+
   const regex = /(\*\*[^*]+\*\*|\*[^*]+\*)/g
   const parts = []
   let lastIndex = 0
@@ -41,13 +91,25 @@ export default function FormattedMessage({ text }) {
   const { isDark } = useTheme()
   if (!text) return null
 
-  const lines = text.split('\n')
+  const rawLines = text.split('\n')
+
+  // Filter out standalone Source lines or page numbers
+  const filteredLines = rawLines.filter((l) => {
+    const t = l.trim()
+    if (t === 'Source:' || t === 'Sources:' || /^Page\s+\d+$/i.test(t) || t === '--' || t === '---') {
+      return false
+    }
+    return true
+  })
 
   return (
     <div className={`space-y-2.5 text-xs leading-relaxed font-sans ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-      {lines.map((line, idx) => {
+      {filteredLines.map((line, idx) => {
         const trimmed = line.trim()
         if (!trimmed) return null
+
+        // Ignore standalone brackets or dashes
+        if (trimmed === '\\[' || trimmed === '\\]' || trimmed === '\\(' || trimmed === '\\)') return null
 
         const cleanLine = trimmed.replace(/^#{1,6}\s*/, '')
 
@@ -78,7 +140,7 @@ export default function FormattedMessage({ text }) {
               isDark ? 'text-indigo-300 border-slate-800' : 'text-indigo-900 border-slate-200'
             }`}>
               <BookOpen size={13} className="text-indigo-500" />
-              <span>{cleanLine}</span>
+              <span>{cleanLaTeXMath(cleanLine)}</span>
             </div>
           )
         }
@@ -123,8 +185,8 @@ export default function FormattedMessage({ text }) {
           )
         }
 
-        // Code / Formula Box
-        const isMathStep = /^(Step\s*\d+:|Formula:|Problem:|Solution:|Proof:)/i.test(trimmed)
+        // Code / Step / Formula Box
+        const isMathStep = /^(Step\s*\d+:|Formula:|Problem:|Solution:|Proof:|Given:|Conclusion:)/i.test(trimmed)
         if (isMathStep) {
           return (
             <div key={idx} className={`p-2.5 rounded-lg border font-mono text-[11px] my-1 ${
