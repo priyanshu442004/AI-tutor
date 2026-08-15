@@ -6,10 +6,12 @@ export default function AskDoubtBot({ selectedBook }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [query, setQuery] = useState('')
+  const isLegal = selectedBook?.is_legal || selectedBook?.id === 'legal' || selectedBook?.id === 'book-legal'
+
   const [messages, setMessages] = useState([
     {
       sender: 'ai',
-      text: `Hello! I am your AI Tutor for **${selectedBook?.title || 'Textbooks'}**. Ask me any doubt or clarification regarding statutory sections or case laws!`,
+      text: `Hello! I am your AI Tutor for **${selectedBook?.title || 'Textbooks'}**. Ask me any question or clarification regarding your textbook!`,
       citations: ['Pinecone Vector DB Ready'],
       time: 'Just now',
     },
@@ -34,14 +36,14 @@ export default function AskDoubtBot({ selectedBook }) {
       let responseText = ''
       let citations = []
 
-      if (text.toLowerCase().includes('salomon')) {
+      if (isLegal && text.toLowerCase().includes('salomon')) {
         responseText = "**Salomon v Salomon & Co. Ltd. (1897)** established the doctrine of separate corporate legal personality.\n\nKey Principles:\n1. Upon incorporation, a company becomes an independent legal entity separate from its members.\n2. Shareholders enjoy limited liability for company debts.\n3. A dominant shareholder is legally separate from the company."
         citations = ["Salomon v Salomon (1897)", "Sec 9 Companies Act 2013"]
-      } else if (text.toLowerCase().includes('2(20)') || text.toLowerCase().includes('2(11)')) {
+      } else if (isLegal && (text.toLowerCase().includes('2(20)') || text.toLowerCase().includes('2(11)'))) {
         responseText = "**Section 2(20) vs Section 2(11):**\n\n• **Section 2(20) 'Company'**: Only entities incorporated under the Indian Companies Act 2013.\n• **Section 2(11) 'Body Corporate'**: Broader umbrella including foreign companies and statutory corporations."
         citations = ["Section 2(20)", "Section 2(11)"]
       } else {
-        responseText = `Based on the vector index for **${selectedBook?.title || 'Legal Textbooks'}**:\n\nThe statutory rule provides that corporate incorporation confers distinct legal personality, perpetual succession, and common seal under law.`
+        responseText = `Based on the textbook content for **${selectedBook?.title || 'Textbooks'}**:\n\nThe core framework provides structured concepts, step-by-step guidance, and practical examples to build deep understanding.`
         citations = ["Pinecone Embeddings", "RAG Vector Store"]
       }
 
@@ -72,7 +74,7 @@ export default function AskDoubtBot({ selectedBook }) {
           <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
             <Sparkles size={16} className="text-amber-300 animate-pulse" />
           </div>
-          <span className="text-xs tracking-wide">Ask a Doubt</span>
+          <span className="text-xs tracking-wide">Ask a Question</span>
         </motion.button>
       )}
 
@@ -97,7 +99,7 @@ export default function AskDoubtBot({ selectedBook }) {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                    <span>Ask a Doubt AI Bot</span>
+                    <span>{isLegal ? 'Legal AI Assistant Bot' : 'AI Tutor Bot'}</span>
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                   </h3>
                   <p className="text-[10px] text-slate-500 font-medium">AI Tutor</p>
@@ -173,7 +175,7 @@ export default function AskDoubtBot({ selectedBook }) {
                   {isThinking && (
                     <div className="flex items-center gap-2 text-[11px] text-indigo-700">
                       <Sparkles size={13} className="animate-spin text-amber-500" />
-                      <span>Searching Pinecone vector DB...</span>
+                      <span>{isLegal ? 'Searching Pinecone legal vector store...' : 'Analyzing textbook content...'}</span>
                     </div>
                   )}
                 </div>
@@ -186,7 +188,7 @@ export default function AskDoubtBot({ selectedBook }) {
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                      placeholder="Ask any doubt about sections or case laws..."
+                      placeholder={isLegal ? "Ask any question about sections or case laws..." : "Ask your question here..."}
                       className="w-full pl-3 pr-10 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
                     />
                     <button

@@ -7,11 +7,13 @@ import {
 
 export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTopic }) {
   const [query, setQuery] = useState('')
+  const isLegal = selectedBook?.is_legal || selectedBook?.id === 'legal' || selectedBook?.id === 'book-legal'
+
   const [messages, setMessages] = useState([
     {
       sender: 'ai',
-      text: `Hello! I am your AI Tutor for **${selectedBook?.title || 'Textbooks'}**. Ask any question or clarification regarding your statutory sections, case laws, or exam problems!`,
-      citations: activeTopic ? [`Sec 2(20)`, `Sec 2(11)`, `Topic ${activeTopic.topic_id}`] : [],
+      text: `Hello! I am your AI Tutor for **${selectedBook?.title || 'Textbooks'}**. Ask any question or clarification regarding your statutory sections, case laws, or textbook problems!`,
+      citations: activeTopic ? (isLegal ? [`Sec 2(20)`, `Sec 2(11)`, `Topic ${activeTopic.topic_id}`] : [`Topic ${activeTopic.topic_id}`]) : [],
       time: 'Just now',
     },
   ])
@@ -19,11 +21,16 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
 
   if (!isOpen) return null
 
-  const suggestedQuestions = [
+  const suggestedQuestions = isLegal ? [
     activeTopic ? `Explain ${activeTopic.topic_title} in 3 simple bullets.` : `What are the key concepts of this book?`,
     `What is the difference between Section 2(20) and Section 2(11)?`,
     `What was held in Salomon v Salomon & Co. Ltd. (1897)?`,
     `Can a foreign incorporated company be sued in India?`,
+  ] : [
+    activeTopic ? `Explain ${activeTopic.topic_title} in 3 simple bullets.` : `What are the key concepts of this book?`,
+    `Can you explain the step-by-step worked example for this topic?`,
+    `What are the most common exam questions and practice problems?`,
+    `Summarize the key principles and pro student tips for this subject.`,
   ]
 
   const handleSend = (textToSend) => {
@@ -39,14 +46,14 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
       let responseText = ""
       let citations = []
 
-      if (text.toLowerCase().includes('salomon')) {
+      if (isLegal && text.toLowerCase().includes('salomon')) {
         responseText = "**Salomon v Salomon & Co. Ltd. (1897) AC 22** is the bedrock precedent for corporate personality.\n\nKey Points:\n1. Upon incorporation, a company becomes an independent legal entity separate from its shareholders.\n2. The company's debts are its own; shareholders have limited liability.\n3. Even a sole dominant shareholder is legally separate from the company."
         citations = ["Salomon v Salomon (1897)", "Sec 9 Companies Act 2013"]
-      } else if (text.toLowerCase().includes('2(20)') || text.toLowerCase().includes('2(11)')) {
+      } else if (isLegal && (text.toLowerCase().includes('2(20)') || text.toLowerCase().includes('2(11)'))) {
         responseText = "**Distinction between Section 2(20) and 2(11):**\n\n• **Section 2(20) - 'Company'**: Refers strictly to entities incorporated under the Indian Companies Act 2013 (or previous Indian laws).\n• **Section 2(11) - 'Body Corporate'**: A broader term that includes foreign incorporated entities, statutory corporations, and financial institutions.\n\n*Rule of Thumb:* Every company is a body corporate, but not every body corporate is a company!"
         citations = ["Section 2(20)", "Section 2(11)", "MCA Circular 1963"]
       } else {
-        responseText = `Based on the embedded sources for **${selectedBook?.title || 'Legal Textbooks'}**:\n\nThe statutory rule provides that legal personality confers separate entity status, perpetual succession, and capacity to contract. When analyzing exam problems, always distinguish between natural persons and juristic entities under statute.`
+        responseText = `Based on the embedded sources for **${selectedBook?.title || 'Textbook Knowledge Base'}**:\n\nThe core framework provides practical understanding, step-by-step analytical methods, and practical application. Always follow the fundamental principles when solving exam problems.`
         citations = [activeTopic ? `Topic ${activeTopic.topic_id}` : "Book Vector Index", "Pinecone Ingestion Ready"]
       }
 
@@ -80,7 +87,7 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
               </div>
               <div>
                 <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                  <span>Ask Your Doubt</span>
+                  <span>{isLegal ? 'Ask Your Legal Question' : 'Ask Your Question'}</span>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Vector DB Ready
                   </span>
@@ -158,7 +165,9 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
                 <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
                   <Sparkles size={16} className="animate-spin text-amber-500" />
                 </div>
-                <span className="animate-pulse font-medium">Querying vector embeddings & generating answer...</span>
+                <span className="animate-pulse font-medium">
+                  {isLegal ? 'Querying legal vector embeddings & generating answer...' : 'Analyzing textbook content & generating answer...'}
+                </span>
               </div>
             )}
           </div>
@@ -166,7 +175,9 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
           {/* Suggested Prompts & Input Bar */}
           <div className="p-4 border-t border-slate-200 bg-white space-y-3">
             <div className="space-y-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Suggested Doubts:</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+                {isLegal ? 'Suggested Legal Questions:' : 'Suggested Questions:'}
+              </span>
               <div className="flex flex-wrap gap-1.5">
                 {suggestedQuestions.map((q, idx) => (
                   <button
@@ -186,7 +197,7 @@ export default function AskDoubtDrawer({ isOpen, onClose, selectedBook, activeTo
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Ask any doubt regarding statutory sections, case laws..."
+                placeholder={isLegal ? "Ask any question regarding statutory sections, case laws..." : "Ask your question here..."}
                 className="w-full pl-4 pr-12 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white"
               />
               <button

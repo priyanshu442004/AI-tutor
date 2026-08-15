@@ -26,17 +26,17 @@ export default function BookReader({ book, onBackToLibrary }) {
 
   const isLegal = book.is_legal || book.id === 'book-legal' || book.id === 'legal'
 
-  // Starter Questions
+  // Dynamic Starter Questions based on book type
   const starterQuestions = isLegal ? [
     { id: 'q1', text: "What is the statutory definition of 'body corporate' under Section 2(11)?" },
     { id: 'q2', text: "How does Perpetual Succession protect a company if all members die?" },
     { id: 'q3', text: "Can a corporate entity be held criminally liable under Indian Law?" },
     { id: 'q4', text: "What are the legal preconditions to lift the corporate veil?" },
   ] : [
-    { id: 'q1', text: "Is every company also a 'body corporate'?" },
-    { id: 'q2', text: "What happens to a company if one of its members dies?" },
-    { id: 'q3', text: "Can a company be sued in court, just like a person?" },
-    { id: 'q4', text: "Why can't a company vote in elections like a citizen can?" },
+    { id: 'q1', text: `What are the core concepts and key takeaways from ${book.title}?` },
+    { id: 'q2', text: "Can you explain the main principles with a practical step-by-step example?" },
+    { id: 'q3', text: "What are the most common exam questions and practice problems for this book?" },
+    { id: 'q4', text: "What are the common misconceptions and pro student tips I should remember?" },
   ]
 
   const storageKey = `ai_tutor_history_${book.id}`
@@ -44,7 +44,9 @@ export default function BookReader({ book, onBackToLibrary }) {
   const defaultInitMsg = {
     id: 'init-1',
     sender: 'ai',
-    text: `Greetings! I am your AI Tutor for **${book.title}**.\n\nPlease ask your doubt or question below.`,
+    text: isLegal
+      ? `Greetings! I am your Senior Legal AI Specialist for **${book.title}**.\n\nPlease ask your legal question below.`
+      : `Greetings! I am your AI Tutor for **${book.title}**.\n\nPlease ask your question below.`,
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   }
 
@@ -136,12 +138,12 @@ export default function BookReader({ book, onBackToLibrary }) {
       let citations = []
       const qLower = query.toLowerCase()
 
-      if (qLower.includes('body corporate') || qLower.includes('every company')) {
+      if (isLegal && (qLower.includes('body corporate') || qLower.includes('every company'))) {
         answerText = "Direct Legal Position:\nYes, every company is a body corporate under Section 2(11) of the Companies Act 2013, but not every body corporate is a company.\n\nStatutory Breakdown:\n• Under Section 2(20), a company is an entity incorporated under Indian company law.\n• A body corporate under Section 2(11) encompasses foreign companies, statutory corporations, and financial institutions.\n\nPractical Counsel:\nFor compliance purposes, filing requirements differ between statutory corporations and Companies Act entities."
         citations = ["Section 2(20) Companies Act 2013", "Section 2(11) Body Corporate"]
       } else {
-        answerText = `Direct ${isLegal ? 'Legal Position' : 'Answer'} for Section ${selectedTopic?.topic_id || 'Concept'}:\nBased on ${isLegal ? 'CLA legal precedents' : 'textbook principles'}, corporate incorporation creates distinct legal entity status, perpetual succession, limited liability, and capacity to contract.\n\nWould you like me to unpack any specific statutory clause or case law?`
-        citations = [selectedTopic ? `Section ${selectedTopic.topic_id}` : "CLA Legal Framework"]
+        answerText = `Direct ${isLegal ? 'Legal Position' : 'Answer'} for ${selectedTopic?.topic_title || 'Concept'}:\nBased on ${isLegal ? 'CLA legal precedents' : 'official textbook principles'}, this topic outlines fundamental concepts, practical application frameworks, and key principles.\n\nWould you like me to unpack any specific section or step-by-step worked example?`
+        citations = [selectedTopic ? `Section ${selectedTopic.topic_id}` : (isLegal ? "CLA Legal Framework" : "Textbook Knowledge Base")]
       }
 
       const aiMessage = {
@@ -162,7 +164,9 @@ export default function BookReader({ book, onBackToLibrary }) {
       {
         id: `init-${Date.now()}`,
         sender: 'ai',
-        text: `Greetings! I am your AI Tutor for **${book.title}**.\n\nPlease ask your doubt or question below.`,
+        text: isLegal
+          ? `Greetings! I am your Senior Legal AI Specialist for **${book.title}**.\n\nPlease ask your legal question below.`
+          : `Greetings! I am your AI Tutor for **${book.title}**.\n\nPlease ask your question below.`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]
@@ -223,8 +227,8 @@ export default function BookReader({ book, onBackToLibrary }) {
               <div className={`p-4 rounded-xl border text-center space-y-1.5 ${
                 isDark ? 'bg-slate-950 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
               }`}>
-                <p className="text-xs font-semibold">No sections accepted by Admin yet</p>
-                <p className="text-[11px] text-slate-500">Admin can upload chapters & accept Golden Datasets from the Admin Dashboard to populate sections here.</p>
+                <p className="text-xs font-semibold">No sections ingested for this book yet</p>
+                <p className="text-[11px] text-slate-500">Upload PDF books from the Admin Dashboard to ingest chapters and populate sections here.</p>
               </div>
             ) : (
               <div className="space-y-3 max-h-48 overflow-y-auto scrollbar-thin pr-1">
@@ -300,8 +304,12 @@ export default function BookReader({ book, onBackToLibrary }) {
               isDark ? 'bg-slate-900/90 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-600'
             }`}>
               <BookOpen size={32} className="mx-auto text-indigo-500" />
-              <h4 className={`text-sm font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Legal AI Doubt Assistant Active</h4>
-              <p className="text-xs max-w-sm mx-auto">You can ask questions directly to the Legal AI Specialist on the right pane anytime!</p>
+              <h4 className={`text-sm font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                {isLegal ? 'Legal AI Specialist Active' : 'AI Tutor Active'}
+              </h4>
+              <p className="text-xs max-w-sm mx-auto">
+                {isLegal ? 'You can ask questions directly to the Legal AI Specialist on the right pane anytime!' : 'You can ask questions directly to your AI Tutor on the right pane anytime!'}
+              </p>
             </div>
           )}
         </div>
@@ -322,7 +330,7 @@ export default function BookReader({ book, onBackToLibrary }) {
                 </div>
                 <div>
                   <h3 className={`text-xs font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    <span>{isLegal ? 'Legal CLA Assistant' : 'Ask Your Doubt'}</span>
+                    <span>{isLegal ? 'Legal CLA Assistant' : 'Ask Your Question'}</span>
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   </h3>
                   <p className={`text-[10px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -355,7 +363,7 @@ export default function BookReader({ book, onBackToLibrary }) {
                   isDark ? 'text-slate-400' : 'text-slate-500'
                 }`}>
                   <Sparkles size={12} className="text-amber-500" />
-                  <span>{isLegal ? 'Suggested Legal Queries:' : 'Starter Doubt Questions:'}</span>
+                  <span>{isLegal ? 'Suggested Legal Queries:' : 'Starter Questions:'}</span>
                 </div>
                 <div className="space-y-1.5">
                   {starterQuestions.map((q) => (
@@ -473,7 +481,7 @@ export default function BookReader({ book, onBackToLibrary }) {
                   isDark ? 'text-indigo-300 bg-indigo-950/60 border-indigo-800' : 'text-indigo-700 bg-indigo-50 border-indigo-200'
                 }`}>
                   <Sparkles size={14} className="animate-spin text-amber-500" />
-                  <span>Analyzing legal context...</span>
+                  <span>{isLegal ? 'Analyzing legal context...' : 'Analyzing textbook content...'}</span>
                 </div>
               )}
 
@@ -488,7 +496,7 @@ export default function BookReader({ book, onBackToLibrary }) {
                   value={inputQuery}
                   onChange={(e) => setInputQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendDoubt()}
-                  placeholder={isLegal ? "Query statutory provisions or legal doubts..." : "Type your doubt or question here..."}
+                  placeholder={isLegal ? "Query statutory provisions or legal questions..." : "Ask your question here..."}
                   className={`w-full pl-4 pr-12 py-3 rounded-xl border text-xs transition-all ${
                     isDark
                       ? 'bg-slate-900 border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500'
